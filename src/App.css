@@ -26,12 +26,13 @@ body {
 
 .calculator-body {
   border-radius: clamp(10px, 4vw, 20px);
-  padding:8rem 2rem 5rem 2rem;
+  padding:6rem 2rem 5rem 2rem;
   background-color: var(--dullBlue);
 }
 
 .calculator-body > div {
   display: flex;
+  flex-wrap: wrap;
 }
 
 #calculator-input {
@@ -40,12 +41,13 @@ body {
   background: none;
   border: none;
   width: 100%;
-  padding: 2rem 0rem; /* or 2rem 2rem */
+  padding: 2rem 0.3rem; /* or 2rem 2rem */
   border-radius: 10px;
   border: 1px solid rgba(var(--base-color-rgb), 0.4);
   margin-bottom: 20px;
-  font-size: 1rem;
+  font-size: 1.4rem;
   font-family:Arial, Helvetica, sans-serif;
+  letter-spacing: 0.1rem;
 }
 
 .calculator-button {
@@ -72,6 +74,9 @@ button {
 }
 
 .wide-arrow-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 30px;  
   padding: 10px 20px;    
   border: none;          
@@ -84,4 +89,23 @@ button {
 
 .wide-arrow-btn:hover {
   background-color: #698292; 
+}
+
+.down-arrow {
+  width: 38px;       
+  height: 18px;    
+  display: block;
+}
+
+.expanded-buttons {
+  margin-left: 20px;  /* Adjust spacing between main calc and expanded section */
+}
+
+.calculator-section, .expanded-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.flip-arrow {
+  transform: rotate(180deg);
 }
