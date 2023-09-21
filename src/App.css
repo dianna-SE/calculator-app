@@ -116,3 +116,18 @@ button {
 .flip-arrow {
   transform: rotate(180deg);
 }
+
+.pressed-display {
+  flex: 1;
+  padding: 8px 35px;
+  margin: 2px;
+  border-color: white;
+  background-color: #718b9c; 
+  color: white;  
+  border: none;
+  transition: 0s;
+  width: calc(25% - 4px);  
+  height: 50px; 
+  font-size: 1.2rem;
+  border-radius: 5px; 
+}

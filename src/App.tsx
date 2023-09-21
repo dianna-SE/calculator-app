@@ -3,9 +3,11 @@ import "./App.css";
 
 
 function App() {
-  const [currentInput, setCurrentInput] = useState("0");
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [resultShown, setResultShown] = useState(false);
+  const [x, setX] = useState<string | null>(null);
+  const [y, setY] = useState<string | null>(null);
+  const [operation, setOperation] = useState<string | null>(null);
+  const [currentInput, setCurrentInput] = useState<string>("0");
+
 
 
   const isValidExponent = (expression: string): boolean => {
@@ -39,7 +41,7 @@ function App() {
       { display: "4", value: "4" },
       { display: "5", value: "5" },
       { display: "6", value: "6" },
-      { display: "x", value: "*" }
+      { display: "x", value: "x" }
     ],
     [
       { display: "1", value: "1" },
@@ -54,42 +56,81 @@ function App() {
       { display: "-", value: "-" }
     ]
   ];
-
-    // Calculates math once "=" is entered
-    // Calculates math once "=" is entered
-const evaluateExpression = (expression: string): string => {
-  // Return early if the expression is "Error"
-  if (expression === "Error") return "Error";
-  
-  try {
-    // Replace any 'x' with '*' for multiplication
-    const sanitizedExpression = expression.replace(/x/g, "*");
     
-    // Replace '^' with '**' for exponentiation
-    const exponentExpression = sanitizedExpression.replace(/\^/g, "**");
+
+    type EvalResult = {
+      value: number;
+      status: "OK" | "OVERFLOW";
+    };
     
-    let result = eval(exponentExpression);
+    
+    function evaluateAddSubtract(x: string, y: string, operation: string): EvalResult {
+      let result: number;
+    
+      switch (operation) {
+        case "+":
+          result = parseFloat(x) + parseFloat(y);
+          break;
 
-    // Convert the result to a string
-    let resultStr = result.toString();
+        case "-":
+          result = parseFloat(x) - parseFloat(y);
+          break;
 
-    console.log("Raw Result:", resultStr); // Debugging line
-
-    if (resultStr.includes('.') && resultStr.split('.')[1].length > 15) { // added this check if the decimal portion exceeds 15 characters
-      resultStr = parseFloat(resultStr).toExponential();
-    } else if (resultStr.length > 18) {
-      resultStr = parseFloat(resultStr).toExponential();
+        default:
+          return { value: 0, status: "OK" };  // default case, can be adjusted as needed
+      }
+    
+      // We can add additional logic here to check for overflow, if required.
+    
+      return { value: result, status: "OK" };
     }
-
-    console.log("Processed Result:", resultStr); // Debugging line
-
-    return resultStr;
-  } catch (e) {
-    console.error(e); // For a better view of the error
-    return "Error"; // Return error if the expression is invalid
-  }
-};
-
+    
+    
+    
+    function evaluateMultiplyDivide(x: string, y: string, operation: string): EvalResult {
+      let result: number;
+    
+      switch (operation) {
+        case "x":
+          result = parseFloat(x) * parseFloat(y);
+          break;
+        case "/":
+          if(parseFloat(y) === 0) {  // Handle division by zero
+            return { value: 0, status: "OVERFLOW" };
+          }
+          result = parseFloat(x) / parseFloat(y);
+          break;
+        default:
+          return { value: 0, status: "OK" };  // default case, can be adjusted as needed
+      }
+    
+      // We can add additional logic here to check for overflow, if required.
+    
+      return { value: result, status: "OK" };
+    }
+    
+    
+    function evaluateExponent(x: string, y: string): EvalResult {
+      const base = parseFloat(x);
+      const exponent = parseFloat(y);
+    
+      // You can adjust these bounds if necessary.
+      if (exponent > 100 || exponent < -100) {
+        return { value: 0, status: "OVERFLOW" };
+      }
+    
+      const result = Math.pow(base, exponent);
+    
+      // Optional: You can also check if the result is too large or too small here.
+      if (!isFinite(result)) {
+        return { value: 0, status: "OVERFLOW" };
+      }
+    
+      return { value: result, status: "OK" };
+    }
+    
+    
+  
     
 
 
@@ -116,99 +157,59 @@ const evaluateExpression = (expression: string): string => {
     }
 };
 
-  // Handles calculations through clicks
-  const handleButtonClick = (value: string) => {
-    const maxLength = 12; // Adjust the maximum length as needed
 
-    // Check if currentInput is "Error"
-    if (currentInput === "Error") {
-      setCurrentInput(value);
-      return;
+
+
+const handleButtonClick = (value: string) => {
+  if (["+", "-", "x", "/"].includes(value)) {
+    if (x !== null) {
+      setOperation(value);
+    }
+    return;
   }
 
-    // Check if currentInput exceeds the maximum length
-    if (currentInput.length >= maxLength) {
-      return;
-    }
-
-    // If result is currently shown and a number is pressed, replace the current input
-    if (resultShown && /[0-9]/.test(value)) {
-        setCurrentInput(value);
-        setResultShown(false);  // Reset resultShown to false
-      return;
-    }
-
-
-
-    if (value === "AC") {
-      setCurrentInput("0");
-    } 
-
-    // checks if input is valid and is not zero, appends a sign in front of input
-    else if (value ==="+/-") {
-      if (!isNaN(parseFloat(currentInput)) && parseFloat(currentInput) !== 0) {
-        setCurrentInput(prev => 
-          (parseFloat(prev) * -1).toString()
-        );
+  if (value === "=") {
+    if (x !== null && y !== null && operation !== null) {
+      let result;
+      switch (operation) {
+        case "+":
+        case "-":
+          result = evaluateAddSubtract(x, y, operation);
+          break;
+        case "x":
+        case "/":
+          result = evaluateMultiplyDivide(x, y, operation);
+          break;
+        case "^":
+          result = evaluateExponent(x, y);
+          break;
+        default:
+          return;
       }
-    }
-
-    else if (value === "=") {
-      if (!isValidExponent(currentInput)) {
-        setCurrentInput("Exponent Too Large");
-        return;
-      }
-    
-      const result = evaluateExpression(currentInput);
-      setCurrentInput(result);
-      setResultShown(true);
-    }
   
-
-    else if (value === "<") {
-      setIsExpanded(!isExpanded);
-   }
-
-    // checks if last value is a valid char for exponentiation
-    else if (value === "^") {
-      const lastChar = currentInput.slice(-1);
-      if (!currentInput.includes("^") && (/[0-9]/.test(lastChar) || lastChar === "(")) {
-          setCurrentInput(prev => prev + value);
+      if (result.status === "OVERFLOW") {
+        setCurrentInput("Overflow");
+        // Handle the overflow case further if needed
+      } else {
+        setCurrentInput(result.value.toString());
+        setX(result.value.toString());
+        setY(null);
+        setOperation(null);
       }
     }
+    return;
+  }
 
-    // checks whether a valid char is entered after an exponent operation
-    else if (currentInput.slice(-1) === "^" && (!/[0-9(]/.test(value))) {
-      return;
-    }
-
-    // appends a decimal char to the input if the button pressed is valid character
-    else if (value === ".") {
-      if (!currentInput.includes(".")) {
-          setCurrentInput(prev => prev + value);
-      }
-    }
-
-    // Handle numbers
-    else if (/[0-9]/.test(value)) {
-    // Check if currentInput is "0" and replace it with the new number
-    if (currentInput === "0") {
-      setCurrentInput(value);
-    } else {
-      setCurrentInput(prev => prev + value);
-    }
-
-    
+  if (operation === null) {
+    setX(value);
+    setCurrentInput(value);
+  } else {
+    setY(value);
+    setCurrentInput(value);
+  }
+};
 
 
-
-
-    }
-    else {
-      setCurrentInput(prev => prev + value);
-    }
-
-  };
 
   
 
@@ -245,6 +246,8 @@ onChange={(e) => {
 
 
 
+
+
       onFocus={() => {
         if (currentInput === "0" || currentInput === "Error") {
           setCurrentInput("");
@@ -278,8 +281,13 @@ onChange={(e) => {
         <button className="calculator-button wide-arrow-btn" onClick={() => handleButtonClick("=")}>=</button>
       </div>
 
+      <div>
+        <button className=" calculator-button pressed-display" >what is clicked</button>
+      </div>
+
 
     </section>
+
 
   </div>
 );
