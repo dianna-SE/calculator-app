@@ -8,22 +8,6 @@ function App() {
   const [operation, setOperation] = useState<string | null>(null);
   const [currentInput, setCurrentInput] = useState<string>("0");
 
-
-
-  const isValidExponent = (expression: string): boolean => {
-    const matches = expression.match(/(\d+)\*\*(\d+)/);
-    if (matches) {
-      const [, base, exponent] = matches;
-      if (parseInt(base, 10) > 1000 && parseInt(exponent, 10) > 1000) {  // Adjust these numbers as needed
-        return false;
-      }
-    }
-    return true;
-  };
-  
-
-
-
   const buttonConfig = [
     [
       { display: "AC", value: "AC" },
@@ -94,12 +78,14 @@ function App() {
         case "x":
           result = parseFloat(x) * parseFloat(y);
           break;
+
         case "/":
           if(parseFloat(y) === 0) {  // Handle division by zero
             return { value: 0, status: "OVERFLOW" };
           }
           result = parseFloat(x) / parseFloat(y);
           break;
+
         default:
           return { value: 0, status: "OK" };  // default case, can be adjusted as needed
       }
@@ -109,25 +95,27 @@ function App() {
       return { value: result, status: "OK" };
     }
     
-    
-    function evaluateExponent(x: string, y: string): EvalResult {
-      const base = parseFloat(x);
-      const exponent = parseFloat(y);
-    
-      // You can adjust these bounds if necessary.
-      if (exponent > 100 || exponent < -100) {
-        return { value: 0, status: "OVERFLOW" };
+
+
+    function evaluateExponentiation(x: string, y: string, operation: string): EvalResult {
+      let result: number;
+  
+      switch (operation) {
+          case "^":
+              result = Math.pow(parseFloat(x), parseFloat(y));
+              
+              // Check for overflow (for the sake of this example, let's consider anything larger than a big number as overflow)
+              if (result > Number.MAX_SAFE_INTEGER) {
+                  return { value: 0, status: "OVERFLOW" };
+              }
+              break;
+  
+          default:
+              return { value: 0, status: "OK" };  // default case, can be adjusted as needed
       }
-    
-      const result = Math.pow(base, exponent);
-    
-      // Optional: You can also check if the result is too large or too small here.
-      if (!isFinite(result)) {
-        return { value: 0, status: "OVERFLOW" };
-      }
-    
+  
       return { value: result, status: "OK" };
-    }
+  }
     
     
   
@@ -161,6 +149,8 @@ function App() {
 
 
 const handleButtonClick = (value: string) => {
+  
+  
   if (["+", "-", "x", "/"].includes(value)) {
     if (x !== null) {
       setOperation(value);
@@ -181,24 +171,26 @@ const handleButtonClick = (value: string) => {
           result = evaluateMultiplyDivide(x, y, operation);
           break;
         case "^":
-          result = evaluateExponent(x, y);
-          break;
+            result = evaluateExponentiation(x, y, operation);
+            break;
         default:
-          return;
-      }
-  
-      if (result.status === "OVERFLOW") {
+            return;
+    }
+
+    if (result.status === "OVERFLOW") {
         setCurrentInput("Overflow");
-        // Handle the overflow case further if needed
-      } else {
+        setX(null); // Reset x in case of overflow
+        setY(null);
+        setOperation(null);
+    } else {
         setCurrentInput(result.value.toString());
         setX(result.value.toString());
         setY(null);
         setOperation(null);
-      }
     }
-    return;
-  }
+}
+return;
+}
 
   if (operation === null) {
     setX(value);
@@ -207,6 +199,7 @@ const handleButtonClick = (value: string) => {
     setY(value);
     setCurrentInput(value);
   }
+
 };
 
 
@@ -279,10 +272,6 @@ onChange={(e) => {
 
       <div>
         <button className="calculator-button wide-arrow-btn" onClick={() => handleButtonClick("=")}>=</button>
-      </div>
-
-      <div>
-        <button className=" calculator-button pressed-display" >what is clicked</button>
       </div>
 
 
