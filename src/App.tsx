@@ -5,6 +5,21 @@ import "./App.css";
 function App() {
   const [currentInput, setCurrentInput] = useState("0");
   const [isExpanded, setIsExpanded] = useState(false);
+  const [resultShown, setResultShown] = useState(false);
+
+
+  const isValidExponent = (expression: string): boolean => {
+    const matches = expression.match(/(\d+)\*\*(\d+)/);
+    if (matches) {
+      const [, base, exponent] = matches;
+      if (parseInt(base, 10) > 1000 && parseInt(exponent, 10) > 1000) {  // Adjust these numbers as needed
+        return false;
+      }
+    }
+    return true;
+  };
+  
+
 
 
   const buttonConfig = [
@@ -24,7 +39,7 @@ function App() {
       { display: "4", value: "4" },
       { display: "5", value: "5" },
       { display: "6", value: "6" },
-      { display: "x", value: "x" }
+      { display: "x", value: "*" }
     ],
     [
       { display: "1", value: "1" },
@@ -40,33 +55,42 @@ function App() {
     ]
   ];
 
-  // displays additional buttons when expanding calculator
-  const expandedDisplay = [
-    [
-      { display: "1/x", value: "1/(" },
-      { display: "√2", value: "sqrt(2)" },
-      { display: "√3", value: "sqrt(3)" },
-      { display: "log", value: "log(" },
-    ],
-    [
-      { display: "ln", value: "ln(" },
-      { display: "log10", value: "log10(" },
-      { display: "rad", value: "rad" },
-      { display: "e", value: "e" },
-    ],
-    [
-      { display: "sin", value: "sin(" },
-      { display: "cos", value: "cos(" },
-      { display: "tan", value: "tan(" },
-      { display: "π", value: "π" }
-    ],
-    [
-      { display: "sinh", value: "sinh(" },
-      { display: "cosh", value: "cosh(" },
-      { display: "tanh", value: "tanh(" },
-      { display: "%", value: "%" }
-    ]
-  ];  
+    // Calculates math once "=" is entered
+    // Calculates math once "=" is entered
+const evaluateExpression = (expression: string): string => {
+  // Return early if the expression is "Error"
+  if (expression === "Error") return "Error";
+  
+  try {
+    // Replace any 'x' with '*' for multiplication
+    const sanitizedExpression = expression.replace(/x/g, "*");
+    
+    // Replace '^' with '**' for exponentiation
+    const exponentExpression = sanitizedExpression.replace(/\^/g, "**");
+    
+    let result = eval(exponentExpression);
+
+    // Convert the result to a string
+    let resultStr = result.toString();
+
+    console.log("Raw Result:", resultStr); // Debugging line
+
+    if (resultStr.includes('.') && resultStr.split('.')[1].length > 15) { // added this check if the decimal portion exceeds 15 characters
+      resultStr = parseFloat(resultStr).toExponential();
+    } else if (resultStr.length > 18) {
+      resultStr = parseFloat(resultStr).toExponential();
+    }
+
+    console.log("Processed Result:", resultStr); // Debugging line
+
+    return resultStr;
+  } catch (e) {
+    console.error(e); // For a better view of the error
+    return "Error"; // Return error if the expression is invalid
+  }
+};
+
+    
 
 
   // Handles calculations through key presses
@@ -76,27 +100,45 @@ function App() {
       'Enter': '=',
       'Escape': 'AC',
       'Backspace': 'DEL'
-      // ... any other key conversions ...
     };
 
-    const value = keyToValueMap[event.key] || event.key;
+    const value = keyToValueMap[event.key];
 
-    // Check if value is present in buttonConfig or expandedDisplay, or is a valid character for the calculator
-    const isValuePresent = buttonConfig.flat().some(btn => btn.value === value) || expandedDisplay.flat().some(btn => btn.value === value);
-    if (isValuePresent || /[0-9+\-*/().^]/.test(value)) {
-      handleButtonClick(value);
+    // If the key is part of the mapping, prevent its default action
+    if (value) {
+      event.preventDefault();
+
+      if (value === "DEL") {
+        setCurrentInput(prev => (prev.length > 1 ? prev.slice(0, -1) : "0"));
+      } else {
+        handleButtonClick(value);
+      }
     }
 };
-  
 
   // Handles calculations through clicks
   const handleButtonClick = (value: string) => {
     const maxLength = 12; // Adjust the maximum length as needed
 
+    // Check if currentInput is "Error"
+    if (currentInput === "Error") {
+      setCurrentInput(value);
+      return;
+  }
+
     // Check if currentInput exceeds the maximum length
     if (currentInput.length >= maxLength) {
       return;
     }
+
+    // If result is currently shown and a number is pressed, replace the current input
+    if (resultShown && /[0-9]/.test(value)) {
+        setCurrentInput(value);
+        setResultShown(false);  // Reset resultShown to false
+      return;
+    }
+
+
 
     if (value === "AC") {
       setCurrentInput("0");
@@ -112,8 +154,16 @@ function App() {
     }
 
     else if (value === "=") {
-      setCurrentInput("0");
+      if (!isValidExponent(currentInput)) {
+        setCurrentInput("Exponent Too Large");
+        return;
+      }
+    
+      const result = evaluateExpression(currentInput);
+      setCurrentInput(result);
+      setResultShown(true);
     }
+  
 
     else if (value === "<") {
       setIsExpanded(!isExpanded);
@@ -147,10 +197,13 @@ function App() {
     } else {
       setCurrentInput(prev => prev + value);
     }
+
+    
+
+
+
+
     }
-
-
-
     else {
       setCurrentInput(prev => prev + value);
     }
@@ -163,46 +216,68 @@ return (
   <div className="main">
     <h1>Calculator</h1>
     <section className="calculator-body">
-      <input type="text" value={currentInput} id="calculator-input" readOnly/>
+
+
+    <input 
+      type="text" 
+      value={currentInput} 
+      id="calculator-input" 
+      onKeyDown={handleKeyDown} 
+
+
+onChange={(e) => {
+  const newValue = e.target.value;
+
+  // Clear "Error" if it's the current input
+  if (currentInput === "Error") {
+    setCurrentInput(newValue);
+    return;
+  }
+
+  if (newValue === "0" || newValue.startsWith("0.") || newValue.startsWith("-0.")) {
+    setCurrentInput(newValue); // keep as is if it's "0" or starts with "0." or "-0."
+  } else if (newValue.startsWith("0") || newValue.startsWith("-0")) {
+    setCurrentInput(newValue.slice(1)); // remove the leading 0 if it starts with "0" or "-0"
+  } else {
+    setCurrentInput(newValue); 
+  }
+}}
+
+
+
+      onFocus={() => {
+        if (currentInput === "0" || currentInput === "Error") {
+          setCurrentInput("");
+        }
+      }}
+
+
+      onBlur={() => {
+        if (currentInput === "") {
+          setCurrentInput("0");
+        }
+      }}
+    />
+
 
       <div className="calculator-section">
-      {buttonConfig.map((row, rowIndex) => (
-    <div key={`buttonRow-${rowIndex}`}>
-        {row.map((button, btnIndex) => (
-            <button key={`btn-${btnIndex}`} className="calculator-button" onClick={() => handleButtonClick(button.value)}>
+        {buttonConfig.map((row, rowIndex) => (
+        <div key={`buttonRow-${rowIndex}`}>
+          {row.map((button, btnIndex) => (
+              <button key={`btn-${btnIndex}`} className="calculator-button" onClick={() => handleButtonClick(button.value)}>
                 {button.display}
-            </button>
+              </button>
+            ))}
+          </div>
         ))}
-    </div>
-))}
-      </div>
-
-      {/* displays additional set of buttons when calculator is expanded */}
-      {isExpanded && 
-        <div className="expanded-section">
-{expandedDisplay.map((row, rowIndex) => (
-    <div key={`expandedRow-${rowIndex}`}>
-        {row.map((button, btnIndex) => (
-            <button key={`expandedBtn-${btnIndex}`} className="calculator-button" onClick={() => handleButtonClick(button.value)}>
-                {button.display}
-            </button>
-        ))}
-    </div>
-))}
-        </div>
-      }
-
-      <div>
-        <button className="calculator-button" onClick={() => handleButtonClick("=")}>=</button>
       </div>
 
 
 
       <div>
-        <button className="calculator-button wide-arrow-btn" onClick={() => handleButtonClick("<")}>
-          <img src="/images/down-arrow.png" alt="Arrow Down" className={`down-arrow ${isExpanded ? 'flip-arrow' : ''}`}/>
-        </button>
+        <button className="calculator-button wide-arrow-btn" onClick={() => handleButtonClick("=")}>=</button>
       </div>
+
 
     </section>
 
