@@ -8,6 +8,11 @@ function App() {
   const [operation, setOperation] = useState<string | null>(null);
   const [currentInput, setCurrentInput] = useState<string>("0");
   const [isExpanded, setIsExpanded] = useState(false);
+  const [appendedString, setAppendedString] = useState<string>("");
+  const [plusMinusClicked, setPlusMinusClicked] = useState(false);
+  const [sqrtClicked, setSqrtClicked] = useState(false);
+  const [percentClicked, setPercentClicked] = useState(false);
+
 
   const buttonConfig = [
     [
@@ -190,13 +195,23 @@ const handleButtonClick = (value: string) => {
   console.log("y:", y);
   console.log("operation:", operation);
 
+  let appendedString = currentInput + value;
+  console.log("what string", appendedString)
+
+  // string expression shown in the display
+  setAppendedString(appendedString);
+
+
   if (value === "AC") {
     setCurrentInput("0");
     setX(null);
     setY(null);
     setOperation(null);
+    setAppendedString("0")
+
     return; 
   }
+
   
   if (["+", "-", "x", "/", "^"].includes(value)) {
     if (x !== null) {
@@ -204,17 +219,26 @@ const handleButtonClick = (value: string) => {
     }
     return;
   }
+  
 
   // expand calculator
   else if (value === "<") {
     setIsExpanded(!isExpanded);
+    return;
  }
 
 
   // checks if input is valid and is not zero, appends a sign in front of input
-  if (value ==="+/-") {
-    console.log("MINUSPLUS CLICKED")
-
+  if (value === "+/-") {
+    if (currentInput === "0" || currentInput === "Error") {
+      return; // Exit early if the input is not a valid number
+    }
+    const numericValue = parseFloat(currentInput); // Convert the currentInput to a number
+    const newValue = (numericValue * -1).toString(); // Perform the negation and convert back to a string
+    setCurrentInput(newValue); // Update the currentInput with the new value
+    console.log("should be negative", newValue)
+    setX(newValue)
+    return;
   }
 
 
@@ -225,15 +249,18 @@ const handleButtonClick = (value: string) => {
         case "+":
         case "-":
           result = evaluateAddSubtract(x, y, operation);
+          setAppendedString(result.value.toString()) // display result on screen
           break;
 
         case "x":
         case "/":
           result = evaluateMultiplyDivide(x, y, operation);
+          setAppendedString(result.value.toString()) // display result on screen
           break;
 
         case "^":
             result = evaluateExponentiation(x, y, operation);
+            setAppendedString(result.value.toString()) // display result on screen
             break;
         default:
             return;
@@ -251,8 +278,8 @@ const handleButtonClick = (value: string) => {
         setY(null);
         setOperation(null);
     }
-}
-return;
+  }
+  return;
 }
 
 if (operation === null) {
@@ -298,7 +325,12 @@ return (
           setCurrentInput("0");
         } else if (currentInput === "Error") {
           setCurrentInput(newValue);
-        } else if (newValue === "0" || newValue.startsWith("0.") || newValue.startsWith("-0.")) {
+        } else if (currentInput === "0" && /[0-9.]/.test(newValue)) {
+          // Replace "0" with the new input value
+          setCurrentInput(newValue);
+        } else if (newValue === "") {
+          setCurrentInput("0"); // Restore "0" if the input is empty
+        } else if (newValue.startsWith("0.") || newValue.startsWith("-0.")) {
           setCurrentInput(newValue);
         } else if (newValue.startsWith("0") || newValue.startsWith("-0")) {
           setCurrentInput(newValue.slice(1));
@@ -325,9 +357,9 @@ return (
       {/* displays additional set of buttons when calculator is expanded */}
       {isExpanded && 
         <div className="expanded-section">
-          <div>
-            <button className="display-screen" onClick={() => handleButtonClick("=")}>=</button>
-          </div>
+            <button className="display-screen">
+                <p>{appendedString}</p>
+            </button>
         </div>
       }
 
@@ -343,26 +375,6 @@ return (
           </div>
         ))}
       </div>
-
-
-
-      {/* displays additional set of buttons when calculator is expanded */}
-      {/* {isExpanded && 
-        <div className="expanded-section">
-          {expandedDisplay.map((row, rowIndex) => (
-          
-          <div key={`expandedRow-${rowIndex}`}>
-              
-            {row.map((button, btnIndex) => (
-            <button key={`expandedBtn-${btnIndex}`} className="calculator-button" onClick={() => handleButtonClick(button.value)}>
-                {button.display}
-            </button>
-            ))}
-          </div>
-          ))}
-        </div>
-      } */}
-
 
 
 
