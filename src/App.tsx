@@ -73,6 +73,7 @@ function App() {
     
     function evaluateMultiplyDivide(x: string, y: string, operation: string): EvalResult {
       let result: number;
+      
     
       switch (operation) {
         case "x":
@@ -102,7 +103,8 @@ function App() {
   
       switch (operation) {
           case "^":
-              result = Math.pow(parseFloat(x), parseFloat(y));
+              // result = Math.pow(parseFloat(x), parseFloat(y));
+              result = parseFloat(x) ** parseFloat(y);
               
               // Check for overflow (for the sake of this example, let's consider anything larger than a big number as overflow)
               if (result > Number.MAX_SAFE_INTEGER) {
@@ -116,6 +118,8 @@ function App() {
   
       return { value: result, status: "OK" };
   }
+
+
     
     
   
@@ -149,9 +153,20 @@ function App() {
 
 
 const handleButtonClick = (value: string) => {
+  console.log("Button Clicked:", value);
+  console.log("x:", x);
+  console.log("y:", y);
+  console.log("operation:", operation);
+
+  if (value === "AC") {
+    setCurrentInput("0");
+    setX(null);
+    setY(null);
+    setOperation(null);
+    return; 
+  }
   
-  
-  if (["+", "-", "x", "/"].includes(value)) {
+  if (["+", "-", "x", "/", "^"].includes(value)) {
     if (x !== null) {
       setOperation(value);
     }
@@ -166,16 +181,19 @@ const handleButtonClick = (value: string) => {
         case "-":
           result = evaluateAddSubtract(x, y, operation);
           break;
+
         case "x":
         case "/":
           result = evaluateMultiplyDivide(x, y, operation);
           break;
+
         case "^":
             result = evaluateExponentiation(x, y, operation);
             break;
         default:
             return;
-    }
+    }  
+
 
     if (result.status === "OVERFLOW") {
         setCurrentInput("Overflow");
@@ -192,13 +210,23 @@ const handleButtonClick = (value: string) => {
 return;
 }
 
-  if (operation === null) {
+if (operation === null) {
+  if (x === null) {
     setX(value);
     setCurrentInput(value);
   } else {
+    setX(x + value); // Append to x if it's not null
+    setCurrentInput(x + value);
+  }
+} else {
+  if (y === null) {
     setY(value);
     setCurrentInput(value);
+  } else {
+    setY(y + value); // Append to y if it's not null
+    setCurrentInput(y + value);
   }
+}
 
 };
 
@@ -219,23 +247,21 @@ return (
       onKeyDown={handleKeyDown} 
 
 
-onChange={(e) => {
-  const newValue = e.target.value;
-
-  // Clear "Error" if it's the current input
-  if (currentInput === "Error") {
-    setCurrentInput(newValue);
-    return;
-  }
-
-  if (newValue === "0" || newValue.startsWith("0.") || newValue.startsWith("-0.")) {
-    setCurrentInput(newValue); // keep as is if it's "0" or starts with "0." or "-0."
-  } else if (newValue.startsWith("0") || newValue.startsWith("-0")) {
-    setCurrentInput(newValue.slice(1)); // remove the leading 0 if it starts with "0" or "-0"
-  } else {
-    setCurrentInput(newValue); 
-  }
-}}
+      // onChange={(e) => {
+      //   const newValue = e.target.value;
+      
+      //   if (newValue === "AC") {
+      //     setCurrentInput("0");
+      //   } else if (currentInput === "Error") {
+      //     setCurrentInput(newValue);
+      //   } else if (newValue === "0" || newValue.startsWith("0.") || newValue.startsWith("-0.")) {
+      //     setCurrentInput(newValue);
+      //   } else if (newValue.startsWith("0") || newValue.startsWith("-0")) {
+      //     setCurrentInput(newValue.slice(1));
+      //   } else {
+      //     setCurrentInput(newValue);
+      //   }
+      // }}
 
 
 
