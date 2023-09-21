@@ -2,13 +2,13 @@
 
 ## Project Instructions
 
-Create a calculator web app using React.js (and no other third-party libraries). The calculator should be capable of performing the following operations at a minimum (feel free to add more if you have time):
+Test Create a calculator web app using React.js (and no other third-party libraries). The calculator should be capable of performing the following operations at a minimum (feel free to add more if you have time):
 
-* addition
-* subtraction
-* multiplication
-* division
-* exponentiation
+* Addition
+* Subtraction
+* Multiplication
+* Division
+* Exponentiation
 
 The end user should be able to operate the calculator via both keyboard and mouse. You should (and will likely need to) give more attention to keyboard interaction. Accessibility is a key concern.
 
