@@ -99,8 +99,33 @@ button {
   background-color: #698292; 
 }
 
-.calculator-section {
+.calculator-section, .expanded-section {
   display: flex;
   flex-direction: column;
+}
+
+.down-arrow {
+  width: 38px;       
+  height: 18px;    
+  display: block;
+}
+
+.flip-arrow {
+  transform: rotate(180deg);
+}
+
+.display-screen {
+  display: flex;
+  text-align: right;
+  justify-content: flex-end;
+  background: none;
+  border: none;
+  width: 100%;
+  padding: 1rem 1rem;
+  margin-bottom: 20px;
+  font-size: 2rem;
+  font-family:Arial, Helvetica, sans-serif;
+  letter-spacing: 0.1rem;
+  background-color: #89abc2; 
 }
 

@@ -7,12 +7,13 @@ function App() {
   const [y, setY] = useState<string | null>(null);
   const [operation, setOperation] = useState<string | null>(null);
   const [currentInput, setCurrentInput] = useState<string>("0");
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const buttonConfig = [
     [
       { display: "AC", value: "AC" },
-      { display: "(", value: "(" },
-      { display: ")", value: ")" },
+      { display: "√", value: "√" },
+      { display: "%", value: "%" },
       { display: "+/-", value: "+/-" }
     ],
     [
@@ -40,6 +41,36 @@ function App() {
       { display: "-", value: "-" }
     ]
   ];
+
+
+    // displays additional buttons when expanding calculator
+    const expandedDisplay = [
+      [
+        { display: "1/x", value: "1/(" },
+        { display: "√2", value: "sqrt(2)" },
+        { display: "√3", value: "sqrt(3)" },
+        { display: "log", value: "log(" },
+      ],
+      [
+        { display: "ln", value: "ln(" },
+        { display: "log10", value: "log10(" },
+        { display: "rad", value: "rad" },
+        { display: "e", value: "e" },
+      ],
+      [
+        { display: "sin", value: "sin(" },
+        { display: "cos", value: "cos(" },
+        { display: "tan", value: "tan(" },
+        { display: "π", value: "π" }
+      ],
+      [
+        { display: "sinh", value: "sinh(" },
+        { display: "cosh", value: "cosh(" },
+        { display: "tanh", value: "tanh(" },
+        { display: "%", value: "%" }
+      ]
+    ];  
+  
     
 
     type EvalResult = {
@@ -120,12 +151,6 @@ function App() {
   }
 
 
-    
-    
-  
-    
-
-
   // Handles calculations through key presses
   const handleKeyDown = (event: KeyboardEvent) => {
     const keyToValueMap: { [key: string]: string } = {
@@ -147,7 +172,14 @@ function App() {
         handleButtonClick(value);
       }
     }
+
+    // Check if value is present in buttonConfig or expandedDisplay, or is a valid character for the calculator
+    const isValuePresent = buttonConfig.flat().some(btn => btn.value === value) || expandedDisplay.flat().some(btn => btn.value === value);
+      if (isValuePresent || /[0-9+\-*/().^]/.test(value)) {
+        handleButtonClick(value);
+    }
 };
+
 
 
 
@@ -172,6 +204,19 @@ const handleButtonClick = (value: string) => {
     }
     return;
   }
+
+  // expand calculator
+  else if (value === "<") {
+    setIsExpanded(!isExpanded);
+ }
+
+
+  // checks if input is valid and is not zero, appends a sign in front of input
+  if (value ==="+/-") {
+    console.log("MINUSPLUS CLICKED")
+
+  }
+
 
   if (value === "=") {
     if (x !== null && y !== null && operation !== null) {
@@ -246,26 +291,21 @@ return (
       id="calculator-input" 
       onKeyDown={handleKeyDown} 
 
-
-      // onChange={(e) => {
-      //   const newValue = e.target.value;
+      onChange={(e) => {
+        const newValue = e.target.value;
       
-      //   if (newValue === "AC") {
-      //     setCurrentInput("0");
-      //   } else if (currentInput === "Error") {
-      //     setCurrentInput(newValue);
-      //   } else if (newValue === "0" || newValue.startsWith("0.") || newValue.startsWith("-0.")) {
-      //     setCurrentInput(newValue);
-      //   } else if (newValue.startsWith("0") || newValue.startsWith("-0")) {
-      //     setCurrentInput(newValue.slice(1));
-      //   } else {
-      //     setCurrentInput(newValue);
-      //   }
-      // }}
-
-
-
-
+        if (newValue === "AC") {
+          setCurrentInput("0");
+        } else if (currentInput === "Error") {
+          setCurrentInput(newValue);
+        } else if (newValue === "0" || newValue.startsWith("0.") || newValue.startsWith("-0.")) {
+          setCurrentInput(newValue);
+        } else if (newValue.startsWith("0") || newValue.startsWith("-0")) {
+          setCurrentInput(newValue.slice(1));
+        } else {
+          setCurrentInput(newValue);
+        }
+      }}
 
       onFocus={() => {
         if (currentInput === "0" || currentInput === "Error") {
@@ -282,6 +322,16 @@ return (
     />
 
 
+      {/* displays additional set of buttons when calculator is expanded */}
+      {isExpanded && 
+        <div className="expanded-section">
+          <div>
+            <button className="display-screen" onClick={() => handleButtonClick("=")}>=</button>
+          </div>
+        </div>
+      }
+
+
       <div className="calculator-section">
         {buttonConfig.map((row, rowIndex) => (
         <div key={`buttonRow-${rowIndex}`}>
@@ -296,8 +346,37 @@ return (
 
 
 
+      {/* displays additional set of buttons when calculator is expanded */}
+      {/* {isExpanded && 
+        <div className="expanded-section">
+          {expandedDisplay.map((row, rowIndex) => (
+          
+          <div key={`expandedRow-${rowIndex}`}>
+              
+            {row.map((button, btnIndex) => (
+            <button key={`expandedBtn-${btnIndex}`} className="calculator-button" onClick={() => handleButtonClick(button.value)}>
+                {button.display}
+            </button>
+            ))}
+          </div>
+          ))}
+        </div>
+      } */}
+
+
+
+
       <div>
         <button className="calculator-button wide-arrow-btn" onClick={() => handleButtonClick("=")}>=</button>
+      </div>
+
+
+
+
+      <div>
+        <button className="calculator-button wide-arrow-btn" onClick={() => handleButtonClick("<")}>
+          <img src="/images/down-arrow.png" alt="Arrow Down" className={`down-arrow ${isExpanded ? 'flip-arrow' : ''}`}/>
+        </button>
       </div>
 
 
