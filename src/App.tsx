@@ -8,6 +8,8 @@ function App() {
   const [operation, setOperation] = useState<string | null>(null);
   const [currentInput, setCurrentInput] = useState<string>("");
   const [displayHistory, setDisplayHistory] = useState<string>("");
+  const [solutionDisplayed, setSolutionDisplayed] = useState(false);
+
 
   const buttonConfig = [
     [
@@ -158,7 +160,6 @@ function evaluateRadical(x: string, y: string, operation: string): EvalResult {
 
     result = multiplier * Math.sqrt(radicand);
     result = parseFloat(result.toFixed(4));  
-    console.log("radical result", result)
     break;
 
 
@@ -204,11 +205,11 @@ const computeResult = (x: string, y: string, operation: string): string => {
 
 
 const processInput = (inputValue: string) => {
-  console.log("x", x)
-  console.log("y", y)
-  console.log("operation", operation)
-  console.log("INPUT: ", inputValue)
-  console.log("displayHistory", displayHistory)
+  console.log("x: ", x)
+  console.log("y: ", y)
+  console.log("operation: ", operation)
+  console.log("Input: ", inputValue)
+
 
 
   // 1. Clears the input
@@ -231,6 +232,7 @@ const processInput = (inputValue: string) => {
   }
 
 
+
   // 3. Handles decimal checks
   if (inputValue === ".") {
     // Handle decimal inputs
@@ -250,7 +252,6 @@ const processInput = (inputValue: string) => {
       if (prevAppendedString === "Overflow") return "Overflow";
       if (inputValue === "AC") return "";
       if (inputValue === "+/-") inputValue = "neg";
-      console.log("prevstring", prevAppendedString)
 
       // Handling decimals:
       if (inputValue === "." && (prevAppendedString === "" || /[+\-x/^%√]$/.test(prevAppendedString))) {
@@ -260,7 +261,6 @@ const processInput = (inputValue: string) => {
       // Handles multiple operations in a succession
       const lastCharIsOperation = /[+\-x/^%√]$/.test(prevAppendedString);
       if (lastCharIsOperation && ["+", "-", "x", "/", "^", "%", "√"].includes(inputValue)) {
-        console.log("last value is operation")  
         return prevAppendedString.slice(0, -1) + inputValue;
       }
       const newAppendedString = prevAppendedString + inputValue;
@@ -268,6 +268,17 @@ const processInput = (inputValue: string) => {
       
       return doubleOperation.length <= 20 ? doubleOperation.replace(/=/g, '') : "Overflow";
   });
+
+
+  if (isOperation(inputValue)) {
+    // Check if the last character in currentInput is also an operation
+    if (/[+\-x/^%√]$/.test(currentInput)) {
+      console.log("A new operation is entered. Updating operation.");
+      setCurrentInput(inputValue)
+      setOperation(inputValue)
+      return;
+    }
+  }
 
 
   // 5. Handles conditions when operations are triggered
@@ -312,6 +323,8 @@ const processInput = (inputValue: string) => {
         if (value === "" || value === "+" || value === "-") {
             return "";
         } else {
+          console.log("negating value")
+
             return (parseFloat(value) * -1).toString();
         }
     };
@@ -332,7 +345,7 @@ const processInput = (inputValue: string) => {
 }
 
 
-  // Handle keyDOwn first neg input and everything is null
+  // Handle keyDown first neg input and everything is null
   if (inputValue === "neg") {
     if (!x && !y) {
         // Append sign if no x exists
@@ -387,7 +400,7 @@ const processInput = (inputValue: string) => {
               setOperation(null);
           }
       }
-
+      setSolutionDisplayed(true);
       return;
   }
 
@@ -398,7 +411,6 @@ const processInput = (inputValue: string) => {
       setX(inputValue);
       setCurrentInput(inputValue);
     } else {
-      console.log("APPENDING TO X")
       setX(x + inputValue); // Append to x if it's not null
       setCurrentInput(x + inputValue);
     }
@@ -455,13 +467,15 @@ if (value === 'DEL') {
   }
 
   if (currentInput.length == 0) {
-    console.log("empty, can't delete more")
+    console.log("Unable to delete empty input.")
     return;
   }
 }
 
 
-
+  if (event.key === 'neg' && x && operation) {
+    console.log("repeating neg");
+  }
 
 
   // Special handling for signs:
