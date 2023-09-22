@@ -9,8 +9,8 @@ function App() {
   const [currentInput, setCurrentInput] = useState<string>("");
   const [isExpanded, setIsExpanded] = useState(false);
   const [appendedString, setAppendedString] = useState<string>("");
-  const [sqrtClicked, setSqrtClicked] = useState(false);
-  const [moduloClicked, setModuloClicked] = useState(false);
+
+
 
 
   const buttonConfig = [
@@ -60,10 +60,12 @@ function App() {
       switch (operation) {
         case "+":
           result = parseFloat(x) + parseFloat(y);
+          result = parseFloat(result.toFixed(4));  
           break;
 
         case "-":
           result = parseFloat(x) - parseFloat(y);
+          result = parseFloat(result.toFixed(4));  
           break;
 
         default:
@@ -83,6 +85,7 @@ function App() {
       switch (operation) {
         case "x":
           result = parseFloat(x) * parseFloat(y);
+          result = parseFloat(result.toFixed(4));  
           break;
 
         case "/":
@@ -90,14 +93,13 @@ function App() {
             return { value: 0, status: "OVERFLOW" };
           }
           result = parseFloat(x) / parseFloat(y);
+          result = parseFloat(result.toFixed(4));  
           break;
 
         default:
           return { value: 0, status: "OK" };  // default case, can be adjusted as needed
       }
-    
-      // We can add additional logic here to check for overflow, if required.
-    
+        
       return { value: result, status: "OK" };
     }
     
@@ -108,10 +110,9 @@ function App() {
   
       switch (operation) {
           case "^":
-              // result = Math.pow(parseFloat(x), parseFloat(y));
               result = parseFloat(x) ** parseFloat(y);
+              result = parseFloat(result.toFixed(4));  
               
-              // Check for overflow (for the sake of this example, let's consider anything larger than a big number as overflow)
               if (result > Number.MAX_SAFE_INTEGER) {
                   return { value: 0, status: "OVERFLOW" };
               }
@@ -131,58 +132,39 @@ function App() {
     switch (operation) {
         case "%":
             result = parseFloat(x) % parseFloat(y);
+            result = parseFloat(result.toFixed(4));  
             break;
 
         default:
-            return { value: 0, status: "OK" };  // default case, can be adjusted as needed
+            return { value: 0, status: "OK" };  
     }
 
     return { value: result, status: "OK" };
 }
 
 
-// function evaluateRadical(x: string, operation: string): EvalResult {
-//   let result: number;
-
-//   switch (operation) {
-//       case "√":
-//           let number = parseFloat(x);
-//           if (number < 0) {
-//               return { 
-//                   value: NaN, 
-//                   status: "ERROR",
-//                   message: "Cannot compute square root of negative number" 
-//               };
-//           }
-//           result = Math.sqrt(number);
-//           break;
-
-//       default:
-//           return { value: 0, status: "ERROR", message: "Unknown operation" }; 
-//   }
-
-//   return { value: result, status: "OK" };
-// }
 
 function evaluateRadical(x: string, y: string, operation: string): EvalResult {
   let result: number;
 
   switch (operation) {
-      case "√":  // Using % as a placeholder for radical
-          let multiplier = parseFloat(x) || 1;  // If x is empty or not a number, use 1 as default
-          let radicand = parseFloat(y);
+    case "√":  
+    let multiplier = parseFloat(x) || 1;  
+    let radicand = parseFloat(y);
 
-          if (radicand < 0) {
-              return { 
-                  value: NaN, 
-                  status: "ERROR",
-                  message: "Cannot compute square root of negative number" 
-              };
-          }
+    if (radicand < 0) {
+        return { 
+            value: NaN, 
+            status: "ERROR",
+            message: "Cannot compute square root of negative number" 
+        };
+    }
 
-          result = multiplier * Math.sqrt(radicand);
-          console.log("radical result", result)
-          break;
+    result = multiplier * Math.sqrt(radicand);
+    result = parseFloat(result.toFixed(4));  
+    console.log("radical result", result)
+    break;
+
 
       default:
           return { value: 0, status: "ERROR", message: "Unknown operation" }; 
@@ -190,6 +172,27 @@ function evaluateRadical(x: string, y: string, operation: string): EvalResult {
 
   return { value: result, status: "OK" };
 }
+
+
+
+function formatResult(value: string): string {
+  if (value.length > 18) {
+    const numberValue = parseFloat(value);
+    return numberValue.toExponential(10); // 10 decimals for precision
+  }
+  return value;
+}
+
+const canAppendNumber = (value: string) => {
+  if (value.length >= 19) {
+    console.log("Max input length reached!");
+    return false;
+  }
+  return true;
+};
+
+
+
 
 
   // Handles calculations through key presses
@@ -229,16 +232,28 @@ const handleDisplayClick = () => {
 
 
 
+
+
+
 const handleButtonClick = (value: string) => {
   console.log("Button Clicked:", value);
   console.log("x:", x);
   console.log("y:", y);
   console.log("operation:", operation);
 
+
+  if (["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."].includes(value)) {
+    if (!canAppendNumber(currentInput)) return;
+  }
+
+  if (currentInput.length >= 20) {
+    console.log("max numbers on display!")
+  }
+
   // expand calculator
   if (value === "<") {
     setIsExpanded(prev => !prev);
-    return; // Early return so the rest of the function isn't executed
+    return; 
   }
 
   let appendedString = currentInput + value;
@@ -257,18 +272,13 @@ const handleButtonClick = (value: string) => {
     return; 
   }
 
-  
+
+  // Handle operations
   if (["+", "-", "x", "/", "^", "%", "√"].includes(value)) {
-    if (x !== null) {
-      setOperation(value);
-
-    }
-
+    setX(currentInput);
+    setOperation(value);
+    setCurrentInput("");
     return;
-  }
-
-  if (value === "√") {
-    console.log("radical")
   }
 
 
@@ -289,34 +299,37 @@ const handleButtonClick = (value: string) => {
 
 
   if (value === "=") {
-    if (x !== null && y !== null && operation !== null) {
+    if (x && y && operation) {
       let result;
+
+
+
       switch (operation) {
         case "+":
         case "-":
           result = evaluateAddSubtract(x, y, operation);
-          setAppendedString(result.value.toString()) // display result on screen
+          // setAppendedString(result.value.toString()) 
           break;
 
         case "x":
         case "/":
           result = evaluateMultiplyDivide(x, y, operation);
-          setAppendedString(result.value.toString()) // display result on screen
+          // setAppendedString(result.value.toString()) 
           break;
 
         case "^":
             result = evaluateExponentiation(x, y, operation);
-            setAppendedString(result.value.toString()) // display result on screen
+            // setAppendedString(result.value.toString()) 
             break;
 
         case "%":
             result = evaluateModulo(x, y, operation);
-            setAppendedString(result.value.toString()) // display result on screen
+            // setAppendedString(result.value.toString()) 
             break;
 
         case "√":
             result = evaluateRadical(x, y, operation);
-            setAppendedString(result.value.toString()) // display result on screen
+            // setAppendedString(result.value.toString()) 
             break;
 
 
@@ -325,14 +338,18 @@ const handleButtonClick = (value: string) => {
     }  
 
 
+    const formattedResult = formatResult(result.value.toString());
+
+    setAppendedString(formattedResult);
+
     if (result.status === "OVERFLOW") {
         setCurrentInput("Overflow");
-        setX(null); // Reset x in case of overflow
+        setX(null);
         setY(null);
         setOperation(null);
     } else {
-        setCurrentInput(result.value.toString());
-        setX(result.value.toString());
+        setCurrentInput(formattedResult);
+        setX(formattedResult);
         setY(null);
         setOperation(null);
     }
@@ -368,7 +385,7 @@ return (
     <section className="calculator-body">
       <input 
           type="text" 
-          value={currentInput} 
+          value={currentInput || '0'}
           id="calculator-input" 
           placeholder="0"
           onKeyDown={handleKeyDown} 
