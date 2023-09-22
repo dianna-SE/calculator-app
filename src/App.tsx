@@ -183,6 +183,35 @@ function formatResult(value: string): string {
   return value;
 }
 
+
+
+
+// Function to compute the result of an expression
+const computeResult = (x: string, y: string, operation: string): string => {
+  switch (operation) {
+    case "+":
+      return evaluateAddSubtract(x, y, operation).value.toString();
+    case "-":
+      return evaluateAddSubtract(x, y, operation).value.toString();
+    case "x":
+      return evaluateMultiplyDivide(x, y, operation).value.toString();
+    case "/":
+      return evaluateMultiplyDivide(x, y, operation).value.toString();
+    case "^":
+      return evaluateExponentiation(x, y, operation).value.toString();
+    case "%":
+      return evaluateModulo(x, y, operation).value.toString();
+    case "√":
+      return evaluateRadical(x, y, operation).value.toString();
+    default:
+      return "";
+  }
+};
+
+
+
+
+
 const canAppendNumber = (value: string) => {
   if (value.length >= 19) {
     console.log("Max input length reached!");
@@ -217,11 +246,6 @@ const canAppendNumber = (value: string) => {
       }
     }
 
-    // Check if value is present in buttonConfig or expandedDisplay, or is a valid character for the calculator
-    // const isValuePresent = buttonConfig.flat().some(btn => btn.value === value) || expandedDisplay.flat().some(btn => btn.value === value);
-    //   if (isValuePresent || /[0-9+\-*/().^]/.test(value)) {
-    //     handleButtonClick(value);
-    // }
 };
 
 
@@ -233,14 +257,11 @@ const handleDisplayClick = () => {
 
 
 
-
-
 const handleButtonClick = (value: string) => {
   console.log("Button Clicked:", value);
   console.log("x:", x);
   console.log("y:", y);
   console.log("operation:", operation);
-
 
   if (["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."].includes(value)) {
     if (!canAppendNumber(currentInput)) return;
@@ -256,11 +277,17 @@ const handleButtonClick = (value: string) => {
     return; 
   }
 
-  let appendedString = currentInput + value;
-  console.log("what string", appendedString)
+  // let appendedString = currentInput + value;
 
   // string expression shown in the display
-  setAppendedString(appendedString);
+  // setAppendedString(prevAppendedString => prevAppendedString + value);
+
+
+  setAppendedString(prevAppendedString => {
+    const newAppendedString = prevAppendedString + value;
+    console.log("Updated appendedString:", newAppendedString);
+    return newAppendedString;
+  });
 
 
   if (value === "AC") {
@@ -274,25 +301,43 @@ const handleButtonClick = (value: string) => {
 
 
   // Handle operations
-  if (["+", "-", "x", "/", "^", "%", "√"].includes(value)) {
-    setX(currentInput);
-    setOperation(value);
-    setCurrentInput("");
-    return;
-  }
+  // if (["+", "-", "x", "/", "^", "%", "√"].includes(value)) {
+  //   setX(currentInput);
+  //   setOperation(value);
+  //   setCurrentInput("");
+  //   return;
+  // }
 
 
+
+    // Handle operations
+    if (["+", "-", "x", "/", "^", "%", "√"].includes(value)) {
+      if (operation && x && currentInput) {
+        // If operation and x are defined, it means we have a complete expression
+        // Compute the result for the previous expression
+        const result = computeResult(x, currentInput, operation);
+        setCurrentInput(result);
+        setX(result);
+        setY(null);
+        setOperation(value);
+      } else {
+        // Otherwise, set x and the operation
+        setX(currentInput);
+        setOperation(value);
+        setCurrentInput("");
+      }
+      return;
+    }
 
 
   // checks if input is valid and is not zero, appends a sign in front of input
   if (value === "+/-") {
     if (currentInput === "0" || currentInput === "Error") {
-      return; // Exit early if the input is not a valid number
+      return; 
     }
-    const numericValue = parseFloat(currentInput); // Convert the currentInput to a number
-    const newValue = (numericValue * -1).toString(); // Perform the negation and convert back to a string
-    setCurrentInput(newValue); // Update the currentInput with the new value
-    console.log("should be negative", newValue)
+    const numericValue = parseFloat(currentInput); 
+    const newValue = (numericValue * -1).toString(); 
+    setCurrentInput(newValue); 
     setX(newValue)
     return;
   }
@@ -302,34 +347,27 @@ const handleButtonClick = (value: string) => {
     if (x && y && operation) {
       let result;
 
-
-
       switch (operation) {
         case "+":
         case "-":
           result = evaluateAddSubtract(x, y, operation);
-          // setAppendedString(result.value.toString()) 
           break;
 
         case "x":
         case "/":
           result = evaluateMultiplyDivide(x, y, operation);
-          // setAppendedString(result.value.toString()) 
           break;
 
         case "^":
             result = evaluateExponentiation(x, y, operation);
-            // setAppendedString(result.value.toString()) 
             break;
 
         case "%":
-            result = evaluateModulo(x, y, operation);
-            // setAppendedString(result.value.toString()) 
+            result = evaluateModulo(x, y, operation); 
             break;
 
         case "√":
             result = evaluateRadical(x, y, operation);
-            // setAppendedString(result.value.toString()) 
             break;
 
 
@@ -430,7 +468,7 @@ return (
       <div className={`expanded-section ${isExpanded ? 'visible' : ''}`}>
         <button className="display-screen" onClick={handleDisplayClick}>
           {appendedString === "" 
-              ? <p className="placeholder-text">Display</p>
+              ? <p className="placeholder-text">History</p>
               : <p>{appendedString}</p>}
         </button>
       </div>
