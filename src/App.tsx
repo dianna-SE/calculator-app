@@ -8,8 +8,6 @@ function App() {
   const [operation, setOperation] = useState<string | null>(null);
   const [currentInput, setCurrentInput] = useState<string>("");
   const [displayHistory, setDisplayHistory] = useState<string>("");
-  const [solutionDisplayed, setSolutionDisplayed] = useState(false);
-
 
   const buttonConfig = [
     [
@@ -212,20 +210,6 @@ const processInput = (inputValue: string) => {
   console.log("INPUT: ", inputValue)
   console.log("displayHistory", displayHistory)
 
-  const isNumberInput = (value: string) => {
-    return /^[0-9.]$/.test(value);
-}
-
-
-if (solutionDisplayed && isNumberInput(inputValue)) {
-    console.log("REMOVING EXISTING ANSWER")
-    setCurrentInput("");
-    setX(null);
-    setY(null);
-    setOperation(null);
-    setSolutionDisplayed(false);
-}
-
 
   // 1. Clears the input
   if (inputValue === "AC") {
@@ -403,11 +387,10 @@ if (solutionDisplayed && isNumberInput(inputValue)) {
               setOperation(null);
           }
       }
-      console.log("answer displayed, reset after")
-      setSolutionDisplayed(true);
+
       return;
   }
-  
+
 
   // Appends values to x or y based on conditions
   if (operation === null) {
@@ -459,7 +442,6 @@ const handleKeyDown = (event: KeyboardEvent) => {
 if (value === 'DEL') {
   if (currentInput.length > 0) {
     setCurrentInput(prevInput => prevInput.slice(0, -1));
-    setDisplayHistory(prevString => prevString.slice(0, -1));
     
     if (!operation) {
       // If no operation is pressed, update x
@@ -471,7 +453,15 @@ if (value === 'DEL') {
     
     return;
   }
+
+  if (currentInput.length == 0) {
+    console.log("empty, can't delete more")
+    return;
+  }
 }
+
+
+
 
 
   // Special handling for signs:
