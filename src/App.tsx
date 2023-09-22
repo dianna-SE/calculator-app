@@ -151,6 +151,7 @@ function evaluateRadical(x: string, y: string, operation: string): EvalResult {
     let radicand = parseFloat(y);
 
     if (radicand < 0) {
+
         return { 
             value: NaN, 
             status: "ERROR",
@@ -200,6 +201,7 @@ const computeResult = (x: string, y: string, operation: string): string => {
     case "%":
       return evaluateModulo(x, y, operation).value.toString();
     case "√":
+      console.log("SOLVING RADICAL")
       return evaluateRadical(x, y, operation).value.toString();
     default:
       return "";
@@ -243,6 +245,8 @@ const processInput = (inputValue: string) => {
       return;
   }
 
+  
+
   // 3. Handle the decimal properly
   if (inputValue === ".") {
     // Handle decimal inputs
@@ -255,6 +259,7 @@ const processInput = (inputValue: string) => {
       return;
     }
   }
+  
 
   // 4. Handles input shown in display area (history)
   setAppendedString(prevAppendedString => {
@@ -280,6 +285,9 @@ const processInput = (inputValue: string) => {
   });
 
 
+
+
+
   // 5. Handles first occurrence operation checks
   if (["+", "-", "x", "/", "^", "%", "√"].includes(inputValue)) {
       if (operation && x && currentInput) {
@@ -298,34 +306,46 @@ const processInput = (inputValue: string) => {
       return;
   }
 
-  // 6. Handles plus/minus signs
-  // if (inputValue === "+/-") {
-  //     console.log("PLUSMINUS")
-  //     if (currentInput === "0" || currentInput === "Error") return;
-  //     setCurrentInput((parseFloat(currentInput) * -1).toString());
-  //     setX(currentInput);
-  //     return;
-  // }
+
 
   if (inputValue === "+/-") {
-    if (currentInput === "0" || currentInput === "Error") return;
+    // Check for empty input or an operation
+    if (currentInput === "" || ["+", "-", "x", "/", "^", "%", "√"].includes(currentInput)) return;
 
     let updatedValue;
 
-    // Check if currentInput is empty or is only an operation
-    if (currentInput === "" || currentInput === "+") {
-        updatedValue = "-";
-    } else if (currentInput === "-") {
-        updatedValue = "";
-    } else {
-        updatedValue = (parseFloat(currentInput) * -1).toString();
+    // Utility function to toggle sign
+    const toggleSign = (value: string) => {
+        if (value === "" || value === "+" || value === "-") {
+            return "";
+        } else {
+            return (parseFloat(value) * -1).toString();
+        }
+    };
+
+    // If y is being used
+    if (operation !== null && y !== null) {
+        updatedValue = toggleSign(y);
+        setY(updatedValue);
+    } 
+    // If only x is being used
+    else {
+        updatedValue = toggleSign(currentInput);
+        setX(updatedValue);
     }
 
     setCurrentInput(updatedValue);
-    setX(updatedValue);
-
     return;
 }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -384,18 +404,18 @@ const processInput = (inputValue: string) => {
 
 
 const handleKeyDown = (event: KeyboardEvent) => {
-  event.preventDefault();
-  console.log('Pressed:', event.key);
+  event.preventDefault(); // prevents characters not in key to be handled
+
   const keyToValueMap: { [key: string]: string } = {
       '+': '+',
-      '-': '-',
+      '-': 'neg',
       '*': 'x',
       '/': '/',
       'x': 'x',
       '%': '%',
       '^': '^',
       '.': '.',
-      'r': 'r',
+      'r': '√',
       'Enter': '=',
       'Escape': 'AC',
       'Backspace': 'DEL'
@@ -404,21 +424,26 @@ const handleKeyDown = (event: KeyboardEvent) => {
   let value = keyToValueMap[event.key];
 
   // Special handling for signs:
-  if (['+', '-'].includes(event.key) && (currentInput === "" || ["+", "-"].includes(currentInput))) {
-    if (event.key === '+') {
-        value = 'AC'; // This will clear the current input.
-    } else if (event.key === '-') {
-        value = "+/-"; // This will toggle the sign.
-    }
-}
+  if (event.key === '+' && (currentInput === "" || currentInput === "-")) {
+    value = 'AC';
+  }
 
+  if (event.key === '-' && (currentInput === "" || /[+\-x/^%√]$/.test(currentInput))) {
+    value = 'neg';
+  }
+  
+
+
+  // Checks for a valid character before passing into calculation function
   if (value || /^[0-9]$/.test(event.key)) {
     event.preventDefault();
     processInput(value || event.key);
   } else {
+    console.log("Ignored input:", event.key);
     return;
   }
 };
+
 
 
 
