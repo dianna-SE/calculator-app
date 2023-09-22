@@ -31,6 +31,7 @@ h1 {
   min-height: 100vh;
 }
 
+
 .calculator-body {
   border-radius: clamp(10px, 4vw, 10px);
   padding: 1rem 2rem 2rem 2rem;
@@ -46,7 +47,6 @@ h1 {
   display: flex;
   text-align: right;
   background: none;
-  border: none;
   width: 100%;
   padding: 2rem 0.3rem; /* or 2rem 2rem */
   border-radius: 10px;
@@ -55,6 +55,9 @@ h1 {
   font-size: 2rem;
   font-family:Arial, Helvetica, sans-serif;
   letter-spacing: 0.1rem;
+  border: none;
+  outline: none; /* This will remove the blue outline that browsers apply when the input is focused */
+  box-shadow: none; 
 }
 
 .calculator-button {
@@ -128,10 +131,12 @@ button {
   font-family:Arial, Helvetica, sans-serif;
   letter-spacing: 0.1rem;
   background-color: #89abc2; 
+  font-size: 1.2rem;
 }
 
 .expanded-section>button {
   transition: 0.3s;
+  background-color: #9fb5c7;
 }
 
 .expanded-section>button:hover {
@@ -139,5 +144,21 @@ button {
   background-color: white;
   color: grey;
   transition: 0.1s;
+}
+
+#display-input {
+  background-color: #b6cfe3;
+  color: white;
+}
+
+/* Define the default color for the placeholder */
+.placeholder-text {
+  letter-spacing: 0.03rem;
+  color: white;
+}
+
+/* Change color when hovering over the button */
+.display-screen:hover .placeholder-text {
+  color: #555; /* Hover color (darker gray) */
 }
 

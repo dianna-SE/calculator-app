@@ -6,7 +6,7 @@ function App() {
   const [x, setX] = useState<string | null>(null);
   const [y, setY] = useState<string | null>(null);
   const [operation, setOperation] = useState<string | null>(null);
-  const [currentInput, setCurrentInput] = useState<string>("0");
+  const [currentInput, setCurrentInput] = useState<string>("");
   const [isExpanded, setIsExpanded] = useState(false);
   const [appendedString, setAppendedString] = useState<string>("");
   const [plusMinusClicked, setPlusMinusClicked] = useState(false);
@@ -101,7 +101,6 @@ function App() {
       }
     
       // We can add additional logic here to check for overflow, if required.
-    
       return { value: result, status: "OK" };
     }
     
@@ -187,6 +186,10 @@ function App() {
 
 
 
+const handleDisplayClick = () => {
+  console.log("Input field was clicked");
+};
+
 
 
 const handleButtonClick = (value: string) => {
@@ -194,6 +197,12 @@ const handleButtonClick = (value: string) => {
   console.log("x:", x);
   console.log("y:", y);
   console.log("operation:", operation);
+
+  // expand calculator
+  if (value === "<") {
+    setIsExpanded(prev => !prev);
+    return; // Early return so the rest of the function isn't executed
+  }
 
   let appendedString = currentInput + value;
   console.log("what string", appendedString)
@@ -217,15 +226,10 @@ const handleButtonClick = (value: string) => {
     if (x !== null) {
       setOperation(value);
     }
+
     return;
   }
-  
 
-  // expand calculator
-  else if (value === "<") {
-    setIsExpanded(!isExpanded);
-    return;
- }
 
 
   // checks if input is valid and is not zero, appends a sign in front of input
@@ -303,19 +307,15 @@ if (operation === null) {
 };
 
 
-
-  
-
 return (
+  
   <div className="main">
-    <h1>Calculator</h1>
     <section className="calculator-body">
-
-
     <input 
       type="text" 
       value={currentInput} 
       id="calculator-input" 
+      placeholder="0"
       onKeyDown={handleKeyDown} 
 
       onChange={(e) => {
@@ -355,13 +355,39 @@ return (
 
 
       {/* displays additional set of buttons when calculator is expanded */}
-      {isExpanded && 
+      {/* {isExpanded && 
         <div className="expanded-section">
             <button className="display-screen">
                 <p>{appendedString}</p>
             </button>
+
+            <input 
+                type="text" 
+                value={appendedString} 
+                id="display-input" 
+                placeholder="No history"
+                className="display-screen"
+                onClick={handleInputClick}
+                readOnly
+            /> 
+
         </div>
-      }
+      } */}
+
+
+
+
+      {isExpanded && 
+        <div className="expanded-section">
+          <button className="display-screen" onClick={handleDisplayClick}>
+            {appendedString === "" 
+              ? <p className="placeholder-text">Display</p>
+              : <p>{appendedString}</p>}
+          </button>
+        </div>  
+      } 
+
+
 
 
       <div className="calculator-section">
@@ -376,20 +402,16 @@ return (
         ))}
       </div>
 
-
-
       <div>
         <button className="calculator-button wide-arrow-btn" onClick={() => handleButtonClick("=")}>=</button>
       </div>
-
-
-
 
       <div>
         <button className="calculator-button wide-arrow-btn" onClick={() => handleButtonClick("<")}>
           <img src="/images/down-arrow.png" alt="Arrow Down" className={`down-arrow ${isExpanded ? 'flip-arrow' : ''}`}/>
         </button>
       </div>
+
 
 
     </section>
