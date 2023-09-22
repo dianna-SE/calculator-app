@@ -227,15 +227,29 @@ const processInput = (inputValue: string) => {
       return;
   }
 
-  // if (inputValue === "<") {
-  //     setIsExpanded(prev => !prev);
-  //     return;
-  // }
+      // Before updating the appendedString, handle the '.' input properly
+      if (inputValue === ".") {
+        if (currentInput.includes(".")) {
+            return; // If the current input already has a '.', ignore further '.' inputs
+        } 
+        if (currentInput === "" || /[+\-x/^%√]$/.test(currentInput)) {
+            setCurrentInput("0."); // Start with 0. if starting with '.' or after an operator
+            return;
+        }
+    }
 
   setAppendedString(prevAppendedString => {
       if (prevAppendedString === "Overflow") return "Overflow";
       if (inputValue === "AC") return "";
       if (inputValue === "+/-") inputValue = "neg";
+
+      
+
+      // Handling decimals:
+      if (inputValue === "." && (prevAppendedString === "" || /[+\-x/^%√]$/.test(prevAppendedString))) {
+          return prevAppendedString + "0.";
+      }
+
       const lastCharIsOperation = /[+\-x/^%√]$/.test(prevAppendedString);
       if (lastCharIsOperation && ["+", "-", "x", "/", "^", "%", "√"].includes(inputValue)) {
           return prevAppendedString.slice(0, -1) + inputValue;
@@ -244,6 +258,11 @@ const processInput = (inputValue: string) => {
       const doubleOperation = newAppendedString.replace(/([+\-*/%^])\1+/g, '$1');
       return doubleOperation.length <= 20 ? doubleOperation.replace(/=/g, '') : "Overflow";
   });
+
+  // check it multiple decimals
+  if (inputValue === "." && (currentInput === "" || currentInput.endsWith("."))) {
+    return; // Prevent adding multiple dots in the current number.
+  }
 
   if (inputValue === "AC") {
       setCurrentInput("");
@@ -367,7 +386,7 @@ return (
             } 
             
             else if (currentInput === "Error") {
-              setCurrentInput(newValue); //
+              setCurrentInput(newValue); // Set error
             } 
             
             else if (currentInput === "0" && /[0-9.]/.test(newValue)) {
@@ -379,15 +398,15 @@ return (
             } 
             
             else if (newValue.startsWith("0.") || newValue.startsWith("-0.")) {
-              setCurrentInput(newValue);
+              setCurrentInput(newValue); // Enter decimal without removing leading 0
             } 
             
             else if (newValue.startsWith("0") || newValue.startsWith("-0")) {
-              setCurrentInput(newValue.slice(1));
+              setCurrentInput(newValue.slice(1)); //remove leading zero
             } 
             
             else {
-              setCurrentInput(newValue);
+              setCurrentInput(newValue); // set user input
             }
           }}
 
