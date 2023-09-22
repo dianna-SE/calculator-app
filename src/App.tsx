@@ -300,59 +300,59 @@ const processInput = (inputValue: string) => {
 
 
 
-//   // Handles signed input (+/-)
-//   if (inputValue === "+/-") {
-//     // Check for empty input or an operation
-//     if (currentInput === "" || ["+", "-", "x", "/", "^", "%", "√"].includes(currentInput)) return;
+  // Handles signed input (+/-) -- buttownDown
+  if (inputValue === "+/-") {
+    // Check for empty input or an operation
+    if (currentInput === "" || ["+", "-", "x", "/", "^", "%", "√"].includes(currentInput)) return;
 
-//     let updatedValue;
+    let updatedValue;
 
-//     // Utility function to toggle sign
-//     const toggleSign = (value: string) => {
-//         if (value === "" || value === "+" || value === "-") {
-//             return "";
-//         } else {
-//             return (parseFloat(value) * -1).toString();
-//         }
-//     };
+    // Utility function to toggle sign
+    const toggleSign = (value: string) => {
+        if (value === "" || value === "+" || value === "-") {
+            return "";
+        } else {
+            return (parseFloat(value) * -1).toString();
+        }
+    };
 
-//     // If y is being used
-//     if (operation !== null && y !== null) {
-//         updatedValue = toggleSign(y);
-//         setY(updatedValue);
-//     } 
-//     // If only x is being used
-//     else {
-//         updatedValue = toggleSign(currentInput);
-//         setX(updatedValue);
-//     }
+    // If y is being used
+    if (operation !== null && y !== null) {
+        updatedValue = toggleSign(y);
+        setY(updatedValue);
+    } 
+    // If only x is being used
+    else {
+        updatedValue = toggleSign(currentInput);
+        setX(updatedValue);
+    }
 
-//     setCurrentInput(updatedValue);
-//     return;
-// }
+    setCurrentInput(updatedValue);
+    return;
+}
 
 
-//   // Handle keyDOwn first neg input and everything is null
-//   if (inputValue === "neg") {
-//     if (!x && !y) {
-//         // Append sign if no x exists
-//         setX("-");
-//         setAppendedString("-");
-//     } else if (x && !y && !operation) {
-//         // Toggle negative sign for x
-//         const newX = x === "-" ? "" : "-";
-//         setX(newX);
-//         setAppendedString(newX);
-//     } else if (x && operation) {
-//       // Toggle negative sign for y, handling case when y is null
-//       const newY = y?.charAt(0) === "-" ? y?.substr(1) : "-" + (y || "");
-//       setY(newY);
+  // Handle keyDOwn first neg input and everything is null
+  if (inputValue === "neg") {
+    if (!x && !y) {
+        // Append sign if no x exists
+        setX("-");
+        setAppendedString("-");
+    } else if (x && !y && !operation) {
+        // Toggle negative sign for x
+        const newX = x === "-" ? "" : "-";
+        setX(newX);
+        setAppendedString(newX);
+    } else if (x && operation) {
+      // Toggle negative sign for y, handling case when y is null
+      const newY = y?.charAt(0) === "-" ? y?.substr(1) : "-" + (y || "");
+      setY(newY);
   
-//       // Append newY to the existing appendedString
-//       setAppendedString(prevAppendedString => prevAppendedString + (newY || "-"));
-//   }
-//     return;
-// }
+      // Append newY to the existing appendedString
+      setAppendedString(prevAppendedString => prevAppendedString + (newY || "-"));
+  }
+    return;
+}
 
 
 
@@ -397,6 +397,7 @@ const processInput = (inputValue: string) => {
       setX(inputValue);
       setCurrentInput(inputValue);
     } else {
+      console.log("APPENDING TO X")
       setX(x + inputValue); // Append to x if it's not null
       setCurrentInput(x + inputValue);
     }
@@ -409,6 +410,7 @@ const processInput = (inputValue: string) => {
       setCurrentInput(y + inputValue);
     }
   }
+
 };
 
 
@@ -434,6 +436,25 @@ const handleKeyDown = (event: KeyboardEvent) => {
   };
 
   let value = keyToValueMap[event.key];
+
+// Handle delete
+if (value === 'DEL') {
+  if (currentInput.length > 0) {
+    setCurrentInput(prevInput => prevInput.slice(0, -1));
+    setAppendedString(prevString => prevString.slice(0, -1));
+    
+    if (!operation) {
+      // If no operation is pressed, update x
+      setX(prevX => (prevX ? prevX.slice(0, -1) : null));
+    } else if (operation && y !== null) {
+      // If operation has been pressed, update y
+      setY(prevY => (prevY ? prevY.slice(0, -1) : null));
+    }
+    
+    return;
+  }
+}
+
 
   // Special handling for signs:
   if (event.key === '+' && (currentInput === "" || currentInput === "-")) {
