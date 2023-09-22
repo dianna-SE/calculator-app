@@ -45,42 +45,13 @@ function App() {
       { display: "-", value: "-" }
     ]
   ];
-
-
-    // displays additional buttons when expanding calculator
-    // const expandedDisplay = [
-    //   [
-    //     { display: "1/x", value: "1/(" },
-    //     { display: "√2", value: "sqrt(2)" },
-    //     { display: "√3", value: "sqrt(3)" },
-    //     { display: "log", value: "log(" },
-    //   ],
-    //   [
-    //     { display: "ln", value: "ln(" },
-    //     { display: "log10", value: "log10(" },
-    //     { display: "rad", value: "rad" },
-    //     { display: "e", value: "e" },
-    //   ],
-    //   [
-    //     { display: "sin", value: "sin(" },
-    //     { display: "cos", value: "cos(" },
-    //     { display: "tan", value: "tan(" },
-    //     { display: "π", value: "π" }
-    //   ],
-    //   [
-    //     { display: "sinh", value: "sinh(" },
-    //     { display: "cosh", value: "cosh(" },
-    //     { display: "tanh", value: "tanh(" },
-    //     { display: "%", value: "%" }
-    //   ]
-    // ];  
   
-    
 
-    type EvalResult = {
-      value: number;
-      status: "OK" | "OVERFLOW";
-    };
+  interface EvalResult {
+    value: number;
+    status: "OK" | "OVERFLOW" | "ERROR";
+    message?: string;
+}
     
     
     function evaluateAddSubtract(x: string, y: string, operation: string): EvalResult {
@@ -154,6 +125,73 @@ function App() {
   }
 
 
+  function evaluateModulo(x: string, y: string, operation: string): EvalResult {
+    let result: number;
+
+    switch (operation) {
+        case "%":
+            result = parseFloat(x) % parseFloat(y);
+            break;
+
+        default:
+            return { value: 0, status: "OK" };  // default case, can be adjusted as needed
+    }
+
+    return { value: result, status: "OK" };
+}
+
+
+// function evaluateRadical(x: string, operation: string): EvalResult {
+//   let result: number;
+
+//   switch (operation) {
+//       case "√":
+//           let number = parseFloat(x);
+//           if (number < 0) {
+//               return { 
+//                   value: NaN, 
+//                   status: "ERROR",
+//                   message: "Cannot compute square root of negative number" 
+//               };
+//           }
+//           result = Math.sqrt(number);
+//           break;
+
+//       default:
+//           return { value: 0, status: "ERROR", message: "Unknown operation" }; 
+//   }
+
+//   return { value: result, status: "OK" };
+// }
+
+function evaluateRadical(x: string, y: string, operation: string): EvalResult {
+  let result: number;
+
+  switch (operation) {
+      case "√":  // Using % as a placeholder for radical
+          let multiplier = parseFloat(x) || 1;  // If x is empty or not a number, use 1 as default
+          let radicand = parseFloat(y);
+
+          if (radicand < 0) {
+              return { 
+                  value: NaN, 
+                  status: "ERROR",
+                  message: "Cannot compute square root of negative number" 
+              };
+          }
+
+          result = multiplier * Math.sqrt(radicand);
+          console.log("radical result", result)
+          break;
+
+      default:
+          return { value: 0, status: "ERROR", message: "Unknown operation" }; 
+  }
+
+  return { value: result, status: "OK" };
+}
+
+
   // Handles calculations through key presses
   const handleKeyDown = (event: KeyboardEvent) => {
     const keyToValueMap: { [key: string]: string } = {
@@ -220,7 +258,7 @@ const handleButtonClick = (value: string) => {
   }
 
   
-  if (["+", "-", "x", "/", "^", "√"].includes(value)) {
+  if (["+", "-", "x", "/", "^", "%", "√"].includes(value)) {
     if (x !== null) {
       setOperation(value);
 
@@ -270,6 +308,18 @@ const handleButtonClick = (value: string) => {
             result = evaluateExponentiation(x, y, operation);
             setAppendedString(result.value.toString()) // display result on screen
             break;
+
+        case "%":
+            result = evaluateModulo(x, y, operation);
+            setAppendedString(result.value.toString()) // display result on screen
+            break;
+
+        case "√":
+            result = evaluateRadical(x, y, operation);
+            setAppendedString(result.value.toString()) // display result on screen
+            break;
+
+
         default:
             return;
     }  
