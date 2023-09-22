@@ -7,7 +7,9 @@ function App() {
   const [y, setY] = useState<string | null>(null);
   const [operation, setOperation] = useState<string | null>(null);
   const [currentInput, setCurrentInput] = useState<string>("");
-  const [appendedString, setAppendedString] = useState<string>("");
+  const [displayHistory, setDisplayHistory] = useState<string>("");
+  const [solutionDisplayed, setSolutionDisplayed] = useState(false);
+
 
   const buttonConfig = [
     [
@@ -208,7 +210,21 @@ const processInput = (inputValue: string) => {
   console.log("y", y)
   console.log("operation", operation)
   console.log("INPUT: ", inputValue)
-  console.log("appendedString", appendedString)
+  console.log("displayHistory", displayHistory)
+
+  const isNumberInput = (value: string) => {
+    return /^[0-9.]$/.test(value);
+}
+
+
+if (solutionDisplayed && isNumberInput(inputValue)) {
+    console.log("REMOVING EXISTING ANSWER")
+    setCurrentInput("");
+    setX(null);
+    setY(null);
+    setOperation(null);
+    setSolutionDisplayed(false);
+}
 
 
   // 1. Clears the input
@@ -217,7 +233,7 @@ const processInput = (inputValue: string) => {
     setX(null);
     setY(null);
     setOperation(null);
-    setAppendedString(""); // added this to reset in edge case overflow
+    setDisplayHistory(""); // added this to reset in edge case overflow
     return;
 }
 
@@ -246,7 +262,7 @@ const processInput = (inputValue: string) => {
   
 
   // 4. Displays the arithmetic history
-  setAppendedString(prevAppendedString => {
+  setDisplayHistory(prevAppendedString => {
       if (prevAppendedString === "Overflow") return "Overflow";
       if (inputValue === "AC") return "";
       if (inputValue === "+/-") inputValue = "neg";
@@ -337,19 +353,19 @@ const processInput = (inputValue: string) => {
     if (!x && !y) {
         // Append sign if no x exists
         setX("-");
-        setAppendedString("-");
+        setDisplayHistory("-");
     } else if (x && !y && !operation) {
         // Toggle negative sign for x
         const newX = x === "-" ? "" : "-";
         setX(newX);
-        setAppendedString(newX);
+        setDisplayHistory(newX);
     } else if (x && operation) {
       // Toggle negative sign for y, handling case when y is null
       const newY = y?.charAt(0) === "-" ? y?.substr(1) : "-" + (y || "");
       setY(newY);
   
-      // Append newY to the existing appendedString
-      setAppendedString(prevAppendedString => prevAppendedString + (newY || "-"));
+      // Append newY to the existing DisplayHistory
+      setDisplayHistory(prevAppendedString => prevAppendedString + (newY || "-"));
   }
     return;
 }
@@ -387,9 +403,11 @@ const processInput = (inputValue: string) => {
               setOperation(null);
           }
       }
+      console.log("answer displayed, reset after")
+      setSolutionDisplayed(true);
       return;
   }
-
+  
 
   // Appends values to x or y based on conditions
   if (operation === null) {
@@ -441,7 +459,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
 if (value === 'DEL') {
   if (currentInput.length > 0) {
     setCurrentInput(prevInput => prevInput.slice(0, -1));
-    setAppendedString(prevString => prevString.slice(0, -1));
+    setDisplayHistory(prevString => prevString.slice(0, -1));
     
     if (!operation) {
       // If no operation is pressed, update x
@@ -546,9 +564,9 @@ return (
 
       <div className="display-body">
         <button className="display-screen">
-          {appendedString === "" 
+          {displayHistory === "" 
               ? <p className="placeholder-text"></p>
-              : <p>{appendedString}</p>}
+              : <p>{displayHistory}</p>}
         </button>
       </div>
 
