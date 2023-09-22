@@ -210,30 +210,6 @@ const processInput = (inputValue: string) => {
   console.log("INPUT: ", inputValue)
   console.log("appendedString", appendedString)
 
-  // Handle keyDOwn first neg input and everything is null
-  if (inputValue === "neg") {
-    if (!x && !y) {
-        // Append sign if no x exists
-        setX("-");
-        setAppendedString("-");
-    } else if (x && !y && !operation) {
-        // Toggle negative sign for x
-        const newX = x === "-" ? "" : "-";
-        setX(newX);
-        setAppendedString(newX);
-    } else if (x && operation) {
-      // Toggle negative sign for y, handling case when y is null
-      const newY = y?.charAt(0) === "-" ? y?.substr(1) : "-" + (y || "");
-      setY(newY);
-  
-      // Append newY to the existing appendedString
-      setAppendedString(prevAppendedString => prevAppendedString + (newY || "-"));
-  }
-    return;
-}
-
-
-
 
   // 1. Clears the input
   if (inputValue === "AC") {
@@ -254,7 +230,6 @@ const processInput = (inputValue: string) => {
       return;
   }
 
-  
 
   // 3. Handles decimal checks
   if (inputValue === ".") {
@@ -270,7 +245,7 @@ const processInput = (inputValue: string) => {
   }
   
 
-  // 4. Handles input shown in display area (history)
+  // 4. Displays the arithmetic history
   setAppendedString(prevAppendedString => {
       if (prevAppendedString === "Overflow") return "Overflow";
       if (inputValue === "AC") return "";
@@ -314,46 +289,74 @@ const processInput = (inputValue: string) => {
         setY(null);
         setOperation(inputValue);
       } else {
-        // Otherwise, update x and the operation
+        // Otherwise, continue updating variables
         setX(currentInput);
         setOperation(inputValue);
-        setCurrentInput(inputValue); // for some reason this makes calculations work
+        setCurrentInput(inputValue); 
       }
+
       return;
   }
 
 
 
-  // Handles signed values (+/-)
-  if (inputValue === "+/-") {
-    // Check for empty input or an operation
-    if (currentInput === "" || ["+", "-", "x", "/", "^", "%", "√"].includes(currentInput)) return;
+//   // Handles signed input (+/-)
+//   if (inputValue === "+/-") {
+//     // Check for empty input or an operation
+//     if (currentInput === "" || ["+", "-", "x", "/", "^", "%", "√"].includes(currentInput)) return;
 
-    let updatedValue;
+//     let updatedValue;
 
-    // Utility function to toggle sign
-    const toggleSign = (value: string) => {
-        if (value === "" || value === "+" || value === "-") {
-            return "";
-        } else {
-            return (parseFloat(value) * -1).toString();
-        }
-    };
+//     // Utility function to toggle sign
+//     const toggleSign = (value: string) => {
+//         if (value === "" || value === "+" || value === "-") {
+//             return "";
+//         } else {
+//             return (parseFloat(value) * -1).toString();
+//         }
+//     };
 
-    // If y is being used
-    if (operation !== null && y !== null) {
-        updatedValue = toggleSign(y);
-        setY(updatedValue);
-    } 
-    // If only x is being used
-    else {
-        updatedValue = toggleSign(currentInput);
-        setX(updatedValue);
-    }
+//     // If y is being used
+//     if (operation !== null && y !== null) {
+//         updatedValue = toggleSign(y);
+//         setY(updatedValue);
+//     } 
+//     // If only x is being used
+//     else {
+//         updatedValue = toggleSign(currentInput);
+//         setX(updatedValue);
+//     }
 
-    setCurrentInput(updatedValue);
-    return;
-}
+//     setCurrentInput(updatedValue);
+//     return;
+// }
+
+
+//   // Handle keyDOwn first neg input and everything is null
+//   if (inputValue === "neg") {
+//     if (!x && !y) {
+//         // Append sign if no x exists
+//         setX("-");
+//         setAppendedString("-");
+//     } else if (x && !y && !operation) {
+//         // Toggle negative sign for x
+//         const newX = x === "-" ? "" : "-";
+//         setX(newX);
+//         setAppendedString(newX);
+//     } else if (x && operation) {
+//       // Toggle negative sign for y, handling case when y is null
+//       const newY = y?.charAt(0) === "-" ? y?.substr(1) : "-" + (y || "");
+//       setY(newY);
+  
+//       // Append newY to the existing appendedString
+//       setAppendedString(prevAppendedString => prevAppendedString + (newY || "-"));
+//   }
+//     return;
+// }
+
+
+
+
 
 
   // Calculates the expression once the "Enter" or "=" is triggered
