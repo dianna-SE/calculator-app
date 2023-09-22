@@ -349,11 +349,11 @@ const handleButtonClick = (value: string) => {
       value = "neg";
     }
   
-    const lastCharIsOperation = /[+\-x/^%√]$/.test(prevAppendedString);
-  
 
     // If the last character is an operation and the current button is also an operation,
     // remove the last character before appending the new operation
+    const lastCharIsOperation = /[+\-x/^%√]$/.test(prevAppendedString);
+  
     if (lastCharIsOperation && ["+", "-", "x", "/", "^", "%", "√"].includes(value)) {
       const updatedString = prevAppendedString.slice(0, -1) + value;
       return updatedString;
@@ -361,16 +361,15 @@ const handleButtonClick = (value: string) => {
   
     const newAppendedString = prevAppendedString + value;
   
-    // Remove consecutive duplicate operations (e.g., "++", "--", "+-", "-+")
+    // Handle consecutive duplicate operations, equals signs, and overflow
     const doubleOperation = newAppendedString.replace(/([+\-*/%^])\1+/g, '$1');
-  
     const limitedAppendedString = doubleOperation.length <= 20 ? doubleOperation : "Overflow";
-  
     const formattedResultWithoutEquals = limitedAppendedString.replace(/=/g, '');
   
     console.log("Updated appendedString:", limitedAppendedString);
     console.log("formatted result equal", formattedResultWithoutEquals);
-    return limitedAppendedString;
+
+    return formattedResultWithoutEquals;
   });
   
   
@@ -395,14 +394,13 @@ const handleButtonClick = (value: string) => {
   // }
 
 
-  prevButtonValue = currentButtonValue;
-  currentButtonValue = value;
+  // prevButtonValue = currentButtonValue;
+  // currentButtonValue = value;
 
-  // for DISPLAY -- do nothing if both the previous and current buttons are operations
-  if (["+", "-", "x", "/", "^", "%", "√"].includes(prevButtonValue) && ["+", "-", "x", "/", "^", "%", "√"].includes(currentButtonValue)) {
-    return;
-  }
-  
+  // // for DISPLAY -- do nothing if both the previous and current buttons are operations
+  // if (["+", "-", "x", "/", "^", "%", "√"].includes(prevButtonValue) && ["+", "-", "x", "/", "^", "%", "√"].includes(currentButtonValue)) {
+  //   return;
+  // }
 
     // Check if the last character in appendedString is an operation
     const lastCharIsOperation = /[+\-x/^%√]$/.test(appendedString);
