@@ -277,18 +277,13 @@ const handleKeyDown = (event: KeyboardEvent) => {
 
 
 
-
-
-
-
-
-
-
 const handleDisplayClick = () => {
   console.log("Input field was clicked");
 };
 
 
+let prevButtonValue = "";
+let currentButtonValue = "";
 
 
 const handleButtonClick = (value: string) => {
@@ -318,10 +313,32 @@ const handleButtonClick = (value: string) => {
 
 
   setAppendedString(prevAppendedString => {
+    if (prevAppendedString === "Overflow") {
+      return "Overflow"; // Return "Overflow" without further appending
+    }
+
+    if (value === "AC") {
+      // Clear appendedString when AC is pressed
+      return "";
+    }
+  
     const newAppendedString = prevAppendedString + value;
-    console.log("Updated appendedString:", newAppendedString);
-    return newAppendedString;
+  
+    // Remove consecutive duplicate operations (e.g., "++", "--", "+-", "-+")
+    const doubleOperation = newAppendedString.replace(/([+\-*/%^])\1+/g, '$1');
+  
+    const limitedAppendedString = doubleOperation.length <= 20 ? doubleOperation : "Overflow";
+  
+    const formattedResultWithoutEquals = limitedAppendedString.replace(/=/g, '');
+  
+    console.log("Updated appendedString:", limitedAppendedString);
+    console.log("formated result equsl", formattedResultWithoutEquals)
+    setAppendedString(formattedResultWithoutEquals);
+
+
+    return limitedAppendedString;
   });
+  
 
 
   if (value === "AC") {
@@ -343,6 +360,23 @@ const handleButtonClick = (value: string) => {
   // }
 
 
+  prevButtonValue = currentButtonValue;
+  currentButtonValue = value;
+
+  // for DISPLAY -- do nothing if both the previous and current buttons are operations
+  // if (["+", "-", "x", "/", "^", "%", "√"].includes(prevButtonValue) && ["+", "-", "x", "/", "^", "%", "√"].includes(currentButtonValue)) {
+  //   return;
+  // }
+
+    // Check if the last character in appendedString is an operation
+    const lastCharIsOperation = /[+\-x/^%√]$/.test(appendedString);
+
+    if (lastCharIsOperation && ["+", "-", "x", "/", "^", "%", "√"].includes(value)) {
+      // Do nothing if the last character is an operation and the current button is also an operation
+      return;
+    }
+
+  
 
     // Handle operations
     if (["+", "-", "x", "/", "^", "%", "√"].includes(value)) {
@@ -412,7 +446,6 @@ const handleButtonClick = (value: string) => {
 
     const formattedResult = formatResult(result.value.toString());
 
-    setAppendedString(formattedResult);
 
     if (result.status === "OVERFLOW") {
         setCurrentInput("Overflow");
@@ -466,7 +499,7 @@ return (
             const newValue = e.target.value;
       
             if (newValue === "AC") {
-              setCurrentInput("0");
+              setCurrentInput("");
             } else if (currentInput === "Error") {
               setCurrentInput(newValue);
             } else if (currentInput === "0" && /[0-9.]/.test(newValue)) {
@@ -499,10 +532,10 @@ return (
       />
 
 
-      <div >
+      <div className="display-body">
         <button className="display-screen" onClick={handleDisplayClick}>
           {appendedString === "" 
-              ? <p className="placeholder-text">TEST</p>
+              ? <p className="placeholder-text"></p>
               : <p>{appendedString}</p>}
         </button>
       </div>
@@ -535,11 +568,11 @@ return (
       </div>
 
 
-      <div>
+      {/* <div>
         <button className="calculator-button wide-arrow-btn" onClick={() => handleButtonClick("<")}>
           <img src="/images/down-arrow.png" alt="Arrow Down" className={`down-arrow ${isExpanded ? 'flip-arrow' : ''}`}/>
         </button>
-      </div>
+      </div> */}
 
     </section>
 
