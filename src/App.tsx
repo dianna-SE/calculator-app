@@ -218,9 +218,25 @@ const canAppendNumber = (value: string) => {
 
 
 const processInput = (inputValue: string) => {
+
+  console.log("x", x)
+  console.log("y", y)
+  console.log("operation", operation)
+  console.log("INPUT: ", inputValue)
+  console.log("appendedString", appendedString)
+
+  let newString = "";
+
   if (["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."].includes(inputValue)) {
-      if (!canAppendNumber(currentInput)) return;
+    console.log("number!");
+    if (canAppendNumber(currentInput)) {
+      newString = currentInput + inputValue; // Append the inputValue to the new string
+      setCurrentInput(newString)
+    } else {
+      return; // Cannot append the number, exit the function
+    }
   }
+  console.log("NEW STRING", newString)
 
   if (currentInput.length >= 20) {
       console.log("max numbers on display!");
@@ -243,7 +259,6 @@ const processInput = (inputValue: string) => {
       if (inputValue === "AC") return "";
       if (inputValue === "+/-") inputValue = "neg";
 
-      
 
       // Handling decimals:
       if (inputValue === "." && (prevAppendedString === "" || /[+\-x/^%√]$/.test(prevAppendedString))) {
@@ -256,6 +271,7 @@ const processInput = (inputValue: string) => {
       }
       const newAppendedString = prevAppendedString + inputValue;
       const doubleOperation = newAppendedString.replace(/([+\-*/%^])\1+/g, '$1');
+      
       return doubleOperation.length <= 20 ? doubleOperation.replace(/=/g, '') : "Overflow";
   });
 
@@ -279,15 +295,18 @@ const processInput = (inputValue: string) => {
 
   if (["+", "-", "x", "/", "^", "%", "√"].includes(inputValue)) {
       if (operation && x && currentInput) {
+        console.log("HAS OPERATION AND x AND CURRENTINPUT - CALCULATE")
           const result = computeResult(x, currentInput, operation);
           setCurrentInput(result);
           setX(result);
           setY(null);
           setOperation(inputValue);
       } else {
-          setX(currentInput);
+        console.log("DOES NOT HAVE OPERATION AND X AND CURRENTINPUT -- DO NOT CALCULATE")
+          // setX(currentInput);
           setOperation(inputValue);
-          setCurrentInput("");
+          // setCurrentInput(""); 
+          // I FIED SOMETHING HERE!!!!!!! SOMETHING WRONG HERE
       }
       return;
   }
@@ -295,6 +314,7 @@ const processInput = (inputValue: string) => {
   if (inputValue === "+/-") {
       if (currentInput === "0" || currentInput === "Error") return;
       setCurrentInput((parseFloat(currentInput) * -1).toString());
+      console.log("PLUSMINUS")
       setX(currentInput);
       return;
   }
@@ -314,11 +334,13 @@ const processInput = (inputValue: string) => {
           }
           const formattedResult = formatResult(result.value.toString());
           if (result.status === "OVERFLOW") {
+            console.log("OVERFLOW")
               setCurrentInput("Overflow");
               setX(null);
               setY(null);
               setOperation(null);
           } else {
+            console.log("NOTOVERFLOW")
               setCurrentInput(formattedResult);
               setX(formattedResult);
               setY(null);
@@ -329,9 +351,11 @@ const processInput = (inputValue: string) => {
   }
 
   if (!operation) {
+      console.log("NOT OPERATION!!!! SETTING x TO INPUTVALUE")
       setX(inputValue);
       setCurrentInput(inputValue);
   } else {
+    console.log("OPERATION ENCOUNTERED!")
       setY(inputValue);
       setCurrentInput(inputValue);
   }
