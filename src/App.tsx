@@ -209,9 +209,6 @@ const computeResult = (x: string, y: string, operation: string): string => {
 };
 
 
-
-
-
 const canAppendNumber = (value: string) => {
   if (value.length >= 19) {
     console.log("Max input length reached!");
@@ -221,32 +218,69 @@ const canAppendNumber = (value: string) => {
 };
 
 
+// Declare keyString outside of the function
+let keyString = "";
 
 
 
-  // Handles calculations through key presses
-  const handleKeyDown = (event: KeyboardEvent) => {
-    const keyToValueMap: { [key: string]: string } = {
-      '*': 'x',
-      'Enter': '=',
-      'Escape': 'AC',
-      'Backspace': 'DEL'
-    };
 
-    const value = keyToValueMap[event.key];
 
-    // If the key is part of the mapping, prevent its default action
-    if (value) {
-      event.preventDefault();
 
-      if (value === "DEL") {
-        setCurrentInput(prev => (prev.length > 1 ? prev.slice(0, -1) : "0"));
-      } else {
-        handleButtonClick(value);
-      }
+
+
+
+
+// Handles calculations through key presses
+const handleKeyDown = (event: KeyboardEvent) => {
+  console.log("Key Clicked:", event.key);
+  console.log("x:", x);
+  console.log("y:", y);
+  console.log("operation:", operation);
+
+  const keyToValueMap: { [key: string]: string } = {
+    '+': '+',
+    '-': '-',
+    '*': 'x',
+    '/': '/',
+    'x': 'x',
+    '%': '%',
+    '^': '^',
+    'Enter': '=',
+    'Escape': 'AC',
+    'Backspace': 'DEL'
+  };
+
+  const value = keyToValueMap[event.key];
+
+  if (value || /^[0-9]$/.test(event.key)) {
+    event.preventDefault();
+
+    // Append numbers and operations to keyString
+    if (/^[0-9]$/.test(event.key) || ['+', '-', '*', '/', '%', '^'].includes(event.key)) {
+      keyString += event.key;
+      setAppendedString(prevAppendedString => prevAppendedString + event.key); // DISPLAY SCREEN
+      setCurrentInput(event.key); // INPUT SCREEN
     }
 
+    console.log("Key String:", keyString);
+  }
+
+  if (event.key === "Enter") {
+    console.log("SOLVE EXPRESSION");
+  }
+
+  if (['+', '-', '*', '/', '%', '^'].includes(event.key)) {
+    setOperation(event.key);
+  }
 };
+
+
+
+
+
+
+
+
 
 
 
@@ -463,6 +497,15 @@ return (
           }}
 
       />
+
+
+      <div >
+        <button className="display-screen" onClick={handleDisplayClick}>
+          {appendedString === "" 
+              ? <p className="placeholder-text">TEST</p>
+              : <p>{appendedString}</p>}
+        </button>
+      </div>
 
 
       <div className={`expanded-section ${isExpanded ? 'visible' : ''}`}>
