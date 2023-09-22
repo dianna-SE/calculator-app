@@ -306,20 +306,57 @@ const handleButtonClick = (value: string) => {
     return; 
   }
 
-  // let appendedString = currentInput + value;
 
-  // string expression shown in the display
-  // setAppendedString(prevAppendedString => prevAppendedString + value);
+  // setAppendedString(prevAppendedString => {
+  //   if (prevAppendedString === "Overflow") {
+  //     return "Overflow"; 
+  //   }
+
+  //   if (value === "AC") {
+  //     return "";
+  //   }
+  
+  //   const newAppendedString = prevAppendedString + value;
+  
+  //   // Remove consecutive duplicate operations (e.g., "++", "--", "+-", "-+")
+  //   const doubleOperation = newAppendedString.replace(/([+\-*/%^])\1+/g, '$1');
+
+  //   // Set to "Overflow" if characters exceed display
+  //   const limitedAppendedString = doubleOperation.length <= 20 ? doubleOperation : "Overflow";
+  
+  //   // Remove any "=" signs in the string to display
+  //   const formattedResultWithoutEquals = limitedAppendedString.replace(/=/g, '');
+  
+  //   console.log("Updated appendedString:", limitedAppendedString);
+  //   console.log("formated result equsl", formattedResultWithoutEquals)
+  //   setAppendedString(formattedResultWithoutEquals);
+
+
+  //   return limitedAppendedString;
+  // });
 
 
   setAppendedString(prevAppendedString => {
     if (prevAppendedString === "Overflow") {
-      return "Overflow"; // Return "Overflow" without further appending
+      return "Overflow"; 
+    }
+  
+    if (value === "AC") {
+      return "";
     }
 
-    if (value === "AC") {
-      // Clear appendedString when AC is pressed
-      return "";
+    if (value === "+/-") {
+      value = "neg";
+    }
+  
+    const lastCharIsOperation = /[+\-x/^%√]$/.test(prevAppendedString);
+  
+
+    // If the last character is an operation and the current button is also an operation,
+    // remove the last character before appending the new operation
+    if (lastCharIsOperation && ["+", "-", "x", "/", "^", "%", "√"].includes(value)) {
+      const updatedString = prevAppendedString.slice(0, -1) + value;
+      return updatedString;
     }
   
     const newAppendedString = prevAppendedString + value;
@@ -332,12 +369,10 @@ const handleButtonClick = (value: string) => {
     const formattedResultWithoutEquals = limitedAppendedString.replace(/=/g, '');
   
     console.log("Updated appendedString:", limitedAppendedString);
-    console.log("formated result equsl", formattedResultWithoutEquals)
-    setAppendedString(formattedResultWithoutEquals);
-
-
+    console.log("formatted result equal", formattedResultWithoutEquals);
     return limitedAppendedString;
   });
+  
   
 
 
@@ -364,9 +399,10 @@ const handleButtonClick = (value: string) => {
   currentButtonValue = value;
 
   // for DISPLAY -- do nothing if both the previous and current buttons are operations
-  // if (["+", "-", "x", "/", "^", "%", "√"].includes(prevButtonValue) && ["+", "-", "x", "/", "^", "%", "√"].includes(currentButtonValue)) {
-  //   return;
-  // }
+  if (["+", "-", "x", "/", "^", "%", "√"].includes(prevButtonValue) && ["+", "-", "x", "/", "^", "%", "√"].includes(currentButtonValue)) {
+    return;
+  }
+  
 
     // Check if the last character in appendedString is an operation
     const lastCharIsOperation = /[+\-x/^%√]$/.test(appendedString);
