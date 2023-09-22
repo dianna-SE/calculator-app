@@ -222,14 +222,6 @@ const processInput = (inputValue: string) => {
   console.log("INPUT: ", inputValue)
   console.log("appendedString", appendedString)
 
-  let manualX = null;
-
-  if (inputValue === "√" && !manualX) {
-    console.log("Radical detected with manualX as falsy. Setting manualX to 1.");
-    manualX = "1";
-    console.log("Value of manualX after assignment: ", manualX);
-}
-
   // 1. Clears the input
   if (inputValue === "AC") {
     setCurrentInput("");
@@ -296,8 +288,11 @@ const processInput = (inputValue: string) => {
       if (inputValue === "√" && x === null) {
         console.log("Radical detected with x as falsy. Setting x to 1.");
         setX("1");
-        console.log("Value of x after setX: ", x); // This might still show the old value because of async updates
-    }
+        setCurrentInput("");
+        setOperation("√");
+        console.log("Value of x after setX: ", x);
+        return;
+      }
 
       if (operation && x && currentInput) {
         // Reached valid input, proceed with calculation
@@ -426,8 +421,6 @@ const handleKeyDown = (event: KeyboardEvent) => {
   if (event.key === '-' && (currentInput === "" || /[+\-x/^%√]$/.test(currentInput))) {
     value = 'neg';
   }
-  
-
 
   // Checks for a valid character before passing into calculation function
   if (value || /^[0-9]$/.test(event.key)) {
