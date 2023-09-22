@@ -7,7 +7,6 @@ function App() {
   const [y, setY] = useState<string | null>(null);
   const [operation, setOperation] = useState<string | null>(null);
   const [currentInput, setCurrentInput] = useState<string>("");
-  const [isExpanded, setIsExpanded] = useState(false);
   const [appendedString, setAppendedString] = useState<string>("");
 
 
@@ -72,7 +71,6 @@ function App() {
           return { value: 0, status: "OK" };  // default case, can be adjusted as needed
       }
     
-      // We can add additional logic here to check for overflow, if required.
       return { value: result, status: "OK" };
     }
     
@@ -219,12 +217,6 @@ const canAppendNumber = (value: string) => {
 
 
 
-
-
-
-//TESTTTTTT
-
-
 const processInput = (inputValue: string) => {
 
   console.log("x", x)
@@ -233,49 +225,42 @@ const processInput = (inputValue: string) => {
   console.log("INPUT: ", inputValue)
   console.log("appendedString", appendedString)
 
-  let newString = "";
 
-  if (["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."].includes(inputValue)) {
-    console.log("number!");
-    if (canAppendNumber(currentInput)) {
-      newString = currentInput + inputValue; // Append the inputValue to the new string
-      setCurrentInput(newString)
-    } else {
-      return; // Cannot append the number, exit the function
-    }
-  }
-  console.log("NEW STRING", newString)
-
+  // this prevents calculators being done 
   if (currentInput.length >= 20) {
       console.log("max numbers on display!");
       return;
   }
 
-      // Before updating the appendedString, handle the '.' input properly
-      if (inputValue === ".") {
-        if (currentInput.includes(".")) {
+  // Before updating the appendedString, handle the '.' input properly
+    if (inputValue === ".") {
+      console.log("has a decimal")
+      if (currentInput.includes(".")) {
+            console.log("Already has a decimal")
             return; // If the current input already has a '.', ignore further '.' inputs
-        } 
-        if (currentInput === "" || /[+\-x/^%√]$/.test(currentInput)) {
-            setCurrentInput("0."); // Start with 0. if starting with '.' or after an operator
-            return;
-        }
-    }
+      } 
+      if (currentInput === "" || /[+\-x/^%√]$/.test(currentInput)) {
+          console.log("starting with 0.")
+          setCurrentInput("0."); // Start with 0. if starting with '.' or after an operator
+          return;
+      }
+  }
 
   setAppendedString(prevAppendedString => {
       if (prevAppendedString === "Overflow") return "Overflow";
       if (inputValue === "AC") return "";
       if (inputValue === "+/-") inputValue = "neg";
 
-
       // Handling decimals:
       if (inputValue === "." && (prevAppendedString === "" || /[+\-x/^%√]$/.test(prevAppendedString))) {
-          return prevAppendedString + "0.";
+        console.log("has a decimal AND stuff")  
+        return prevAppendedString + "0.";
       }
 
       const lastCharIsOperation = /[+\-x/^%√]$/.test(prevAppendedString);
       if (lastCharIsOperation && ["+", "-", "x", "/", "^", "%", "√"].includes(inputValue)) {
-          return prevAppendedString.slice(0, -1) + inputValue;
+        console.log("last value is operation")  
+        return prevAppendedString.slice(0, -1) + inputValue;
       }
       const newAppendedString = prevAppendedString + inputValue;
       const doubleOperation = newAppendedString.replace(/([+\-*/%^])\1+/g, '$1');
@@ -283,8 +268,9 @@ const processInput = (inputValue: string) => {
       return doubleOperation.length <= 20 ? doubleOperation.replace(/=/g, '') : "Overflow";
   });
 
-  // check it multiple decimals
+  // check if multiple decimals
   if (inputValue === "." && (currentInput === "" || currentInput.endsWith("."))) {
+    console.log("prevents adding multiple decimals")  
     return; // Prevent adding multiple dots in the current number.
   }
 
@@ -298,23 +284,24 @@ const processInput = (inputValue: string) => {
 
   const lastCharIsOperation = /[+\-x/^%√]$/.test(appendedString);
   if (lastCharIsOperation && ["+", "-", "x", "/", "^", "%", "√"].includes(inputValue)) {
-      return;
+    console.log("TESTS FOR DOUBLE OPERATION")  
+    return;
   }
 
   if (["+", "-", "x", "/", "^", "%", "√"].includes(inputValue)) {
       if (operation && x && currentInput) {
         console.log("HAS OPERATION AND x AND CURRENTINPUT - CALCULATE")
-          const result = computeResult(x, currentInput, operation);
-          setCurrentInput(result);
-          setX(result);
-          setY(null);
-          setOperation(inputValue);
+        const result = computeResult(x, currentInput, operation);
+        setCurrentInput(result);
+        setX(result);
+        setY(null);
+        setOperation(inputValue);
       } else {
         console.log("DOES NOT HAVE OPERATION AND X AND CURRENTINPUT -- DO NOT CALCULATE")
-          // setX(currentInput);
-          setOperation(inputValue);
-          // setCurrentInput(""); 
-          // I FIED SOMETHING HERE!!!!!!! SOMETHING WRONG HERE
+        // Otherwise, set x and the operation
+        setX(currentInput);
+        setOperation(inputValue);
+        setCurrentInput(inputValue); // for some reason this makes calculations work
       }
       return;
   }
@@ -377,7 +364,11 @@ const processInput = (inputValue: string) => {
   }
 };
 
+
+
 const handleKeyDown = (event: KeyboardEvent) => {
+  event.preventDefault();
+  console.log('Pressed:', event.key);
   const keyToValueMap: { [key: string]: string } = {
       '+': '+',
       '-': '-',
@@ -386,303 +377,34 @@ const handleKeyDown = (event: KeyboardEvent) => {
       'x': 'x',
       '%': '%',
       '^': '^',
+      '.': '.',
+      'r': 'r',
       'Enter': '=',
       'Escape': 'AC',
       'Backspace': 'DEL'
   };
 
   const value = keyToValueMap[event.key];
+
   if (value || /^[0-9]$/.test(event.key)) {
-      event.preventDefault();
-      processInput(value || event.key);
+    // If the key is in the map or is a number, proceed:
+    event.preventDefault();
+    processInput(value || event.key);
+  } else {
+    // If the key is not in the map and not a number, ignore it:
+    console.log("Ignored input:", event.key);
+    return;
   }
 };
+
+
+
+
+
 
 const handleButtonClick = (value: string) => {
   processInput(value);
 };
-
-
-
-//TESTTTTTTTT
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // Declare keyString outside of the function
-// let keyString = "";
-
-
-// // Handles calculations through key presses
-// const handleKeyDown = (event: KeyboardEvent) => {
-//   console.log("Key Clicked:", event.key);
-//   console.log("x:", x);
-//   console.log("y:", y);
-//   console.log("operation:", operation);
-
-//   const keyToValueMap: { [key: string]: string } = {
-//     '+': '+',
-//     '-': '-',
-//     '*': 'x',
-//     '/': '/',
-//     'x': 'x',
-//     '%': '%',
-//     '^': '^',
-//     'Enter': '=',
-//     'Escape': 'AC',
-//     'Backspace': 'DEL'
-//   };
-
-//   const value = keyToValueMap[event.key];
-
-//   if (value || /^[0-9]$/.test(event.key)) {
-//     event.preventDefault();
-
-//     // Append numbers and operations to keyString
-//     if (/^[0-9]$/.test(event.key) || ['+', '-', '*', '/', '%', '^'].includes(event.key)) {
-//       keyString += event.key;
-//       setAppendedString(prevAppendedString => prevAppendedString + event.key); // DISPLAY SCREEN
-//       setCurrentInput(event.key); // INPUT SCREEN
-//     }
-
-//     console.log("Key String:", keyString);
-//   }
-
-//   if (event.key === "Enter") {
-//     console.log("SOLVE EXPRESSION");
-//   }
-
-//   if (['+', '-', '*', '/', '%', '^'].includes(event.key)) {
-//     setOperation(event.key);
-//   }
-// };
-
-
-
-
-// const handleDisplayClick = () => {
-//   console.log("Input field was clicked");
-// };
-
-
-
-// let prevButtonValue = "";
-// let currentButtonValue = "";
-
-
-// const handleButtonClick = (value: string) => {
-//   console.log("Button Clicked:", value);
-//   console.log("x:", x);
-//   console.log("y:", y);
-//   console.log("operation:", operation);
-
-//   if (["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."].includes(value)) {
-//     if (!canAppendNumber(currentInput)) return;
-//   }
-
-//   if (currentInput.length >= 20) {
-//     console.log("max numbers on display!")
-//   }
-
-//   // expand calculator
-//   if (value === "<") {
-//     setIsExpanded(prev => !prev);
-//     return; 
-//   }
-
-
-//   setAppendedString(prevAppendedString => {
-//     if (prevAppendedString === "Overflow") {
-//       return "Overflow"; 
-//     }
-  
-//     if (value === "AC") {
-//       return "";
-//     }
-
-//     if (value === "+/-") {
-//       value = "neg";
-//     }
-  
-//     const lastCharIsOperation = /[+\-x/^%√]$/.test(prevAppendedString);
-  
-
-//     // If the last character is an operation and the current button is also an operation,
-//     // remove the last character before appending the new operation
-//     if (lastCharIsOperation && ["+", "-", "x", "/", "^", "%", "√"].includes(value)) {
-//       const updatedString = prevAppendedString.slice(0, -1) + value;
-//       return updatedString;
-//     }
-  
-//     const newAppendedString = prevAppendedString + value;
-  
-//     // Remove consecutive duplicate operations (e.g., "++", "--", "+-", "-+")
-//     const doubleOperation = newAppendedString.replace(/([+\-*/%^])\1+/g, '$1');
-  
-//     const limitedAppendedString = doubleOperation.length <= 20 ? doubleOperation : "Overflow";
-  
-//     const formattedResultWithoutEquals = limitedAppendedString.replace(/=/g, '');
-  
-//     console.log("Updated appendedString:", limitedAppendedString);
-//     console.log("formatted result equal", formattedResultWithoutEquals);
-//     return limitedAppendedString;
-//   });
-  
-  
-
-
-//   if (value === "AC") {
-//     setCurrentInput("");
-//     setX(null);
-//     setY(null);
-//     setOperation(null);
-//     setAppendedString("")
-//     return; 
-//   }
-
-
-//   prevButtonValue = currentButtonValue;
-//   currentButtonValue = value;
-
-//   // for DISPLAY -- do nothing if both the previous and current buttons are operations
-//   if (["+", "-", "x", "/", "^", "%", "√"].includes(prevButtonValue) && ["+", "-", "x", "/", "^", "%", "√"].includes(currentButtonValue)) {
-//     return;
-//   }
-  
-
-//     // Check if the last character in appendedString is an operation
-//     const lastCharIsOperation = /[+\-x/^%√]$/.test(appendedString);
-
-//     if (lastCharIsOperation && ["+", "-", "x", "/", "^", "%", "√"].includes(value)) {
-//       // Do nothing if the last character is an operation and the current button is also an operation
-//       return;
-//     }
-
-  
-
-//     // Handle operations
-//     if (["+", "-", "x", "/", "^", "%", "√"].includes(value)) {
-//       if (operation && x && currentInput) {
-//         // If operation and x are defined, it means we have a complete expression
-//         // Compute the result for the previous expression
-//         const result = computeResult(x, currentInput, operation);
-//         setCurrentInput(result);
-//         setX(result);
-//         setY(null);
-//         setOperation(value);
-//       } else {
-//         // Otherwise, set x and the operation
-//         setX(currentInput);
-//         setOperation(value);
-//         setCurrentInput("");
-//       }
-//       return;
-//     }
-
-
-//   // checks if input is valid and is not zero, appends a sign in front of input
-//   if (value === "+/-") {
-//     if (currentInput === "0" || currentInput === "Error") {
-//       return; 
-//     }
-//     const numericValue = parseFloat(currentInput); 
-//     const newValue = (numericValue * -1).toString(); 
-//     setCurrentInput(newValue); 
-//     setX(newValue)
-//     return;
-//   }
-
-
-//   if (value === "=") {
-//     if (x && y && operation) {
-//       let result;
-
-//       switch (operation) {
-//         case "+":
-//         case "-":
-//           result = evaluateAddSubtract(x, y, operation);
-//           break;
-
-//         case "x":
-//         case "/":
-//           result = evaluateMultiplyDivide(x, y, operation);
-//           break;
-
-//         case "^":
-//             result = evaluateExponentiation(x, y, operation);
-//             break;
-
-//         case "%":
-//             result = evaluateModulo(x, y, operation); 
-//             break;
-
-//         case "√":
-//             result = evaluateRadical(x, y, operation);
-//             break;
-
-
-//         default:
-//             return;
-//     }  
-
-
-//     const formattedResult = formatResult(result.value.toString());
-
-
-//     if (result.status === "OVERFLOW") {
-//         setCurrentInput("Overflow");
-//         setX(null);
-//         setY(null);
-//         setOperation(null);
-//     } else {
-//         setCurrentInput(formattedResult);
-//         setX(formattedResult);
-//         setY(null);
-//         setOperation(null);
-//     }
-//   }
-//   return;
-// }
-
-// if (operation === null) {
-//   if (x === null) {
-//     setX(value);
-//     setCurrentInput(value);
-//   } else {
-//     setX(x + value); // Append to x if it's not null
-//     setCurrentInput(x + value);
-//   }
-// } else {
-//   if (y === null) {
-//     setY(value);
-//     setCurrentInput(value);
-//   } else {
-//     setY(y + value); // Append to y if it's not null
-//     setCurrentInput(y + value);
-//   }
-// }
-
-// };
-
-
 
 
 
@@ -702,21 +424,33 @@ return (
           onChange={(e) => {
             const newValue = e.target.value;
       
+            
             if (newValue === "AC") {
-              setCurrentInput("");
-            } else if (currentInput === "Error") {
+              setCurrentInput(""); // Clear
+            } 
+            
+            else if (currentInput === "Error") {
+              setCurrentInput(newValue); // Set error
+            } 
+            
+            else if (currentInput === "0" && /[0-9.]/.test(newValue)) {
               setCurrentInput(newValue);
-            } else if (currentInput === "0" && /[0-9.]/.test(newValue)) {
-            // Replace "0" with the new input value
-              setCurrentInput(newValue);
-            } else if (newValue === "") {
+            } 
+            
+            else if (newValue === "") {
               setCurrentInput("0"); // Restore "0" if the input is empty
-            } else if (newValue.startsWith("0.") || newValue.startsWith("-0.")) {
-              setCurrentInput(newValue);
-            } else if (newValue.startsWith("0") || newValue.startsWith("-0")) {
-              setCurrentInput(newValue.slice(1));
-            } else {
-              setCurrentInput(newValue);
+            } 
+            
+            else if (newValue.startsWith("0.") || newValue.startsWith("-0.")) {
+              setCurrentInput(newValue); // Enter decimal without removing leading 0
+            } 
+            
+            else if (newValue.startsWith("0") || newValue.startsWith("-0")) {
+              setCurrentInput(newValue.slice(1)); //remove leading zero
+            } 
+            
+            else {
+              setCurrentInput(newValue); // set user input
             }
           }}
 
@@ -737,18 +471,9 @@ return (
 
 
       <div className="display-body">
-        <button className="display-screen" >
+        <button className="display-screen">
           {appendedString === "" 
               ? <p className="placeholder-text"></p>
-              : <p>{appendedString}</p>}
-        </button>
-      </div>
-
-
-      <div className={`expanded-section ${isExpanded ? 'visible' : ''}`}>
-        <button className="display-screen" >
-          {appendedString === "" 
-              ? <p className="placeholder-text">History</p>
               : <p>{appendedString}</p>}
         </button>
       </div>
@@ -770,13 +495,6 @@ return (
       <div>
         <button className="calculator-button enter-btn" onClick={() => handleButtonClick("=")}>=</button>
       </div>
-
-
-      {/* <div>
-        <button className="calculator-button wide-arrow-btn" onClick={() => handleButtonClick("<")}>
-          <img src="/images/down-arrow.png" alt="Arrow Down" className={`down-arrow ${isExpanded ? 'flip-arrow' : ''}`}/>
-        </button>
-      </div> */}
 
     </section>
 
