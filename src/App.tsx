@@ -227,32 +227,33 @@ const processInput = (inputValue: string) => {
 
   let newString = "";
 
-  if (["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."].includes(inputValue)) {
-    console.log("number!");
-    if (canAppendNumber(currentInput)) {
-      newString = currentInput + inputValue; // Append the inputValue to the new string
-      setCurrentInput(newString)
-    } else {
-      return; // Cannot append the number, exit the function
-    }
-  }
-  console.log("NEW STRING", newString)
+  // if (["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."].includes(inputValue)) {
+  //   console.log("number!");
+  //   if (canAppendNumber(currentInput)) {
+  //     newString = currentInput + inputValue; // Append the inputValue to the new string
+  //     setCurrentInput(newString)
+  //   } else {
+  //     return; // Cannot append the number, exit the function
+  //   } 
+  // } 
+  // console.log("NEW STRING", newString)
 
   if (currentInput.length >= 20) {
       console.log("max numbers on display!");
       return;
   }
 
-      // Before updating the appendedString, handle the '.' input properly
-      if (inputValue === ".") {
-        if (currentInput.includes(".")) {
+  // Before updating the appendedString, handle the '.' input properly
+    if (inputValue === ".") {
+      if (currentInput.includes(".")) {
+            console.log("Already has a decimal")
             return; // If the current input already has a '.', ignore further '.' inputs
-        } 
-        if (currentInput === "" || /[+\-x/^%√]$/.test(currentInput)) {
-            setCurrentInput("0."); // Start with 0. if starting with '.' or after an operator
-            return;
-        }
-    }
+      } 
+      if (currentInput === "" || /[+\-x/^%√]$/.test(currentInput)) {
+          setCurrentInput("0."); // Start with 0. if starting with '.' or after an operator
+          return;
+      }
+  }
 
   setAppendedString(prevAppendedString => {
       if (prevAppendedString === "Overflow") return "Overflow";
@@ -296,17 +297,17 @@ const processInput = (inputValue: string) => {
   if (["+", "-", "x", "/", "^", "%", "√"].includes(inputValue)) {
       if (operation && x && currentInput) {
         console.log("HAS OPERATION AND x AND CURRENTINPUT - CALCULATE")
-          const result = computeResult(x, currentInput, operation);
-          setCurrentInput(result);
-          setX(result);
-          setY(null);
-          setOperation(inputValue);
+        const result = computeResult(x, currentInput, operation);
+        setCurrentInput(result);
+        setX(result);
+        setY(null);
+        setOperation(inputValue);
       } else {
         console.log("DOES NOT HAVE OPERATION AND X AND CURRENTINPUT -- DO NOT CALCULATE")
-          // setX(currentInput);
-          setOperation(inputValue);
-          // setCurrentInput(""); 
-          // I FIED SOMETHING HERE!!!!!!! SOMETHING WRONG HERE
+        // Otherwise, set x and the operation
+        setX(currentInput);
+        setOperation(inputValue);
+        setCurrentInput(inputValue); // for some reason this makes calculations work
       }
       return;
   }
@@ -350,14 +351,22 @@ const processInput = (inputValue: string) => {
       return;
   }
 
-  if (!operation) {
-      console.log("NOT OPERATION!!!! SETTING x TO INPUTVALUE")
+  if (operation === null) {
+    if (x === null) {
       setX(inputValue);
       setCurrentInput(inputValue);
+    } else {
+      setX(x + inputValue); // Append to x if it's not null
+      setCurrentInput(x + inputValue);
+    }
   } else {
-    console.log("OPERATION ENCOUNTERED!")
+    if (y === null) {
       setY(inputValue);
       setCurrentInput(inputValue);
+    } else {
+      setY(y + inputValue); // Append to y if it's not null
+      setCurrentInput(y + inputValue);
+    }
   }
 };
 
