@@ -252,18 +252,48 @@ const handleKeyDown = (event: KeyboardEvent) => {
 
   const value = keyToValueMap[event.key];
 
+  // Prevent any keys into input unless it is inside map
+  if (!value && !/^[0-9]$/.test(event.key)) {
+    event.preventDefault();
+    return;
+  }
+
+
   if (value || /^[0-9]$/.test(event.key)) {
     event.preventDefault();
 
     // Append numbers and operations to keyString
     if (/^[0-9]$/.test(event.key) || ['+', '-', '*', '/', '%', '^'].includes(event.key)) {
-      keyString += event.key;
-      setAppendedString(prevAppendedString => prevAppendedString + event.key); // DISPLAY SCREEN
-      setCurrentInput(event.key); // INPUT SCREEN
-    }
+      if (appendedString !== "Overflow" && appendedString.length <= 21) {
+        keyString += event.key;
+        
 
-    console.log("Key String:", keyString);
+        if (/^[0-9]$/.test(event.key)) {
+          // If the typed key is a number, keep appending
+          setCurrentInput(prevInput => prevInput + event.key);
+          
+        }else {
+          // If the typed key is an operation, assign it to x and update the operation
+          setX(appendedString); // Assign x the current input
+          setOperation(event.key); // Update the operation
+          setCurrentInput(event.key);
+        }
+
+        
+
+        setAppendedString(prevAppendedString => prevAppendedString + event.key); // DISPLAY SCREEN
+
+        console.log("Key String:", keyString);
+        console.log("Appended String:", appendedString); // Log appendedString
+      } else if (appendedString !== "Overflow") {
+        // Show "Overflow" when the length exceeds 21 characters
+        setAppendedString("Overflow");
+        console.log("SHOULD BE OVERFLOW", appendedString);
+        return;
+      }
+    }
   }
+
 
   if (event.key === "Enter") {
     console.log("SOLVE EXPRESSION");
@@ -272,6 +302,9 @@ const handleKeyDown = (event: KeyboardEvent) => {
   if (['+', '-', '*', '/', '%', '^'].includes(event.key)) {
     setOperation(event.key);
   }
+
+  console.log("Appended String:", appendedString);
+
 };
 
 
@@ -305,36 +338,6 @@ const handleButtonClick = (value: string) => {
     setIsExpanded(prev => !prev);
     return; 
   }
-
-
-  // setAppendedString(prevAppendedString => {
-  //   if (prevAppendedString === "Overflow") {
-  //     return "Overflow"; 
-  //   }
-
-  //   if (value === "AC") {
-  //     return "";
-  //   }
-  
-  //   const newAppendedString = prevAppendedString + value;
-  
-  //   // Remove consecutive duplicate operations (e.g., "++", "--", "+-", "-+")
-  //   const doubleOperation = newAppendedString.replace(/([+\-*/%^])\1+/g, '$1');
-
-  //   // Set to "Overflow" if characters exceed display
-  //   const limitedAppendedString = doubleOperation.length <= 20 ? doubleOperation : "Overflow";
-  
-  //   // Remove any "=" signs in the string to display
-  //   const formattedResultWithoutEquals = limitedAppendedString.replace(/=/g, '');
-  
-  //   console.log("Updated appendedString:", limitedAppendedString);
-  //   console.log("formated result equsl", formattedResultWithoutEquals)
-  //   setAppendedString(formattedResultWithoutEquals);
-
-
-  //   return limitedAppendedString;
-  // });
-
 
   setAppendedString(prevAppendedString => {
     if (prevAppendedString === "Overflow") {
@@ -384,33 +387,12 @@ const handleButtonClick = (value: string) => {
     return; 
   }
 
-
-  // Handle operations
-  // if (["+", "-", "x", "/", "^", "%", "√"].includes(value)) {
-  //   setX(currentInput);
-  //   setOperation(value);
-  //   setCurrentInput("");
-  //   return;
-  // }
-
-
-  // prevButtonValue = currentButtonValue;
-  // currentButtonValue = value;
-
-  // // for DISPLAY -- do nothing if both the previous and current buttons are operations
-  // if (["+", "-", "x", "/", "^", "%", "√"].includes(prevButtonValue) && ["+", "-", "x", "/", "^", "%", "√"].includes(currentButtonValue)) {
-  //   return;
-  // }
-
-    // Check if the last character in appendedString is an operation
+    // Prevents further calculation of duplicate operations are pressed
     const lastCharIsOperation = /[+\-x/^%√]$/.test(appendedString);
 
     if (lastCharIsOperation && ["+", "-", "x", "/", "^", "%", "√"].includes(value)) {
-      // Do nothing if the last character is an operation and the current button is also an operation
       return;
     }
-
-  
 
     // Handle operations
     if (["+", "-", "x", "/", "^", "%", "√"].includes(value)) {
@@ -600,13 +582,6 @@ return (
       <div>
         <button className="calculator-button enter-btn" onClick={() => handleButtonClick("=")}>=</button>
       </div>
-
-
-      {/* <div>
-        <button className="calculator-button wide-arrow-btn" onClick={() => handleButtonClick("<")}>
-          <img src="/images/down-arrow.png" alt="Arrow Down" className={`down-arrow ${isExpanded ? 'flip-arrow' : ''}`}/>
-        </button>
-      </div> */}
 
     </section>
 
