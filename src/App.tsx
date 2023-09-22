@@ -174,12 +174,10 @@ function evaluateRadical(x: string, y: string, operation: string): EvalResult {
 function formatResult(value: string): string {
   if (value.length > 18) {
     const numberValue = parseFloat(value);
-    return numberValue.toExponential(10); // 10 decimals for precision
+    return numberValue.toExponential(4); // 10 decimals for precision
   }
   return value;
 }
-
-
 
 
 // Function to compute the result of an expression
@@ -205,22 +203,37 @@ const computeResult = (x: string, y: string, operation: string): string => {
 };
 
 
-// const canAppendNumber = (value: string) => {
-//   if (value.length >= 19) {
-//     console.log("Max input length reached!");
-//     return false;
-//   }
-//   return true;
-// };
-
-
-
 const processInput = (inputValue: string) => {
   console.log("x", x)
   console.log("y", y)
   console.log("operation", operation)
   console.log("INPUT: ", inputValue)
   console.log("appendedString", appendedString)
+
+  // Handle keyDOwn first neg input and everything is null
+  if (inputValue === "neg") {
+    if (!x && !y) {
+        // Append sign if no x exists
+        setX("-");
+        setAppendedString("-");
+    } else if (x && !y && !operation) {
+        // Toggle negative sign for x
+        const newX = x === "-" ? "" : "-";
+        setX(newX);
+        setAppendedString(newX);
+    } else if (x && operation) {
+      // Toggle negative sign for y, handling case when y is null
+      const newY = y?.charAt(0) === "-" ? y?.substr(1) : "-" + (y || "");
+      setY(newY);
+  
+      // Append newY to the existing appendedString
+      setAppendedString(prevAppendedString => prevAppendedString + (newY || "-"));
+  }
+    return;
+}
+
+
+
 
   // 1. Clears the input
   if (inputValue === "AC") {
@@ -232,7 +245,7 @@ const processInput = (inputValue: string) => {
     return;
 }
 
-  // 2. checks if max length, proceed with operations only
+  // 2. Checks if max length, proceed with operations only
   const isOperation = (inputValue: string) => ["+", "-", "x", "/", "^", "%", "√"].includes(inputValue);
 
   if (currentInput.length >= 19 && !isOperation(inputValue)) {
@@ -243,7 +256,7 @@ const processInput = (inputValue: string) => {
 
   
 
-  // 3. Handle the decimal properly
+  // 3. Handles decimal checks
   if (inputValue === ".") {
     // Handle decimal inputs
     if (currentInput.includes(".")) {
@@ -262,6 +275,7 @@ const processInput = (inputValue: string) => {
       if (prevAppendedString === "Overflow") return "Overflow";
       if (inputValue === "AC") return "";
       if (inputValue === "+/-") inputValue = "neg";
+      console.log("prevstring", prevAppendedString)
 
       // Handling decimals:
       if (inputValue === "." && (prevAppendedString === "" || /[+\-x/^%√]$/.test(prevAppendedString))) {
@@ -281,16 +295,14 @@ const processInput = (inputValue: string) => {
   });
 
 
-  // 5. Handles first occurrence operation checks
+  // 5. Handles conditions when operations are triggered
   // if (["+", "-", "x", "/", "^", "%", "√"].includes(inputValue)) {
     if (isOperation(inputValue)) {
 
       if (inputValue === "√" && x === null) {
-        console.log("Radical detected with x as falsy. Setting x to 1.");
         setX("1");
         setCurrentInput("");
         setOperation("√");
-        console.log("Value of x after setX: ", x);
         return;
       }
 
@@ -312,6 +324,7 @@ const processInput = (inputValue: string) => {
 
 
 
+  // Handles signed values (+/-)
   if (inputValue === "+/-") {
     // Check for empty input or an operation
     if (currentInput === "" || ["+", "-", "x", "/", "^", "%", "√"].includes(currentInput)) return;
@@ -342,6 +355,8 @@ const processInput = (inputValue: string) => {
     return;
 }
 
+
+  // Calculates the expression once the "Enter" or "=" is triggered
   if (inputValue === "=") {
       if (x && y && operation) {
           let result;
@@ -372,6 +387,8 @@ const processInput = (inputValue: string) => {
       return;
   }
 
+
+  // Appends values to x or y based on conditions
   if (operation === null) {
     if (x === null) {
       setX(inputValue);
@@ -393,12 +410,13 @@ const processInput = (inputValue: string) => {
 
 
 
+// Handles calculations using keyboard 
 const handleKeyDown = (event: KeyboardEvent) => {
   event.preventDefault(); // prevents characters not in key to be handled
 
   const keyToValueMap: { [key: string]: string } = {
       '+': '+',
-      '-': 'neg',
+      '-': '-',
       '*': 'x',
       '/': '/',
       'x': 'x',
@@ -407,6 +425,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
       '.': '.',
       'r': '√',
       'Enter': '=',
+      '=': '=',
       'Escape': 'AC',
       'Backspace': 'DEL'
   };
@@ -432,12 +451,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
   }
 };
 
-
-
-
-
-
-
+// Handles calculations using mouse 
 const handleButtonClick = (value: string) => {
   processInput(value);
 };
@@ -448,7 +462,7 @@ const handleButtonClick = (value: string) => {
 return (
   
   <div className="main">
-    <h1>Calculator</h1>
+
     <section className="calculator-body">
       <input 
           type="text" 
