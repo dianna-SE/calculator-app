@@ -218,34 +218,45 @@ const canAppendNumber = (value: string) => {
 
 
 const processInput = (inputValue: string) => {
-
   console.log("x", x)
   console.log("y", y)
   console.log("operation", operation)
   console.log("INPUT: ", inputValue)
   console.log("appendedString", appendedString)
 
+  // 1. Clears the input
+  if (inputValue === "AC") {
+    setCurrentInput("");
+    setX(null);
+    setY(null);
+    setOperation(null);
+    setAppendedString(""); // added this to reset in edge case overflow
+    return;
+}
 
-  // this prevents calculators being done 
-  if (currentInput.length >= 20) {
-      console.log("max numbers on display!");
+  // 2. checks if max length, proceed with operations only
+  const isOperation = (inputValue: string) => ["+", "-", "x", "/", "^", "%", "√"].includes(inputValue);
+
+  if (currentInput.length >= 19 && !isOperation(inputValue)) {
+      console.log("max numbers on display! updating x");
+      setX(currentInput)
       return;
   }
 
-  // Before updating the appendedString, handle the '.' input properly
-    if (inputValue === ".") {
-      console.log("has a decimal")
-      if (currentInput.includes(".")) {
-            console.log("Already has a decimal")
-            return; // If the current input already has a '.', ignore further '.' inputs
-      } 
-      if (currentInput === "" || /[+\-x/^%√]$/.test(currentInput)) {
-          console.log("starting with 0.")
-          setCurrentInput("0."); // Start with 0. if starting with '.' or after an operator
-          return;
-      }
+  // 3. Handle the decimal properly
+  if (inputValue === ".") {
+    // Handle decimal inputs
+    if (currentInput.includes(".")) {
+      console.log("Already has a decimal");
+      return;
+    }
+    if (currentInput === "" || /[+\-x/^%√]$/.test(currentInput)) {
+      setCurrentInput("0.");
+      return;
+    }
   }
 
+  // 4. Handles input shown in display area (history)
   setAppendedString(prevAppendedString => {
       if (prevAppendedString === "Overflow") return "Overflow";
       if (inputValue === "AC") return "";
@@ -253,10 +264,10 @@ const processInput = (inputValue: string) => {
 
       // Handling decimals:
       if (inputValue === "." && (prevAppendedString === "" || /[+\-x/^%√]$/.test(prevAppendedString))) {
-        console.log("has a decimal AND stuff")  
         return prevAppendedString + "0.";
       }
 
+      // Handles multiple operations in a succession
       const lastCharIsOperation = /[+\-x/^%√]$/.test(prevAppendedString);
       if (lastCharIsOperation && ["+", "-", "x", "/", "^", "%", "√"].includes(inputValue)) {
         console.log("last value is operation")  
@@ -268,37 +279,18 @@ const processInput = (inputValue: string) => {
       return doubleOperation.length <= 20 ? doubleOperation.replace(/=/g, '') : "Overflow";
   });
 
-  // check if multiple decimals
-  if (inputValue === "." && (currentInput === "" || currentInput.endsWith("."))) {
-    console.log("prevents adding multiple decimals")  
-    return; // Prevent adding multiple dots in the current number.
-  }
 
-  if (inputValue === "AC") {
-      setCurrentInput("");
-      setX(null);
-      setY(null);
-      setOperation(null);
-      return;
-  }
-
-  const lastCharIsOperation = /[+\-x/^%√]$/.test(appendedString);
-  if (lastCharIsOperation && ["+", "-", "x", "/", "^", "%", "√"].includes(inputValue)) {
-    console.log("TESTS FOR DOUBLE OPERATION")  
-    return;
-  }
-
+  // 5. Handles first occurrence operation checks
   if (["+", "-", "x", "/", "^", "%", "√"].includes(inputValue)) {
       if (operation && x && currentInput) {
-        console.log("HAS OPERATION AND x AND CURRENTINPUT - CALCULATE")
+        // Reached valid input, proceed with calculation
         const result = computeResult(x, currentInput, operation);
         setCurrentInput(result);
         setX(result);
         setY(null);
         setOperation(inputValue);
       } else {
-        console.log("DOES NOT HAVE OPERATION AND X AND CURRENTINPUT -- DO NOT CALCULATE")
-        // Otherwise, set x and the operation
+        // Otherwise, update x and the operation
         setX(currentInput);
         setOperation(inputValue);
         setCurrentInput(inputValue); // for some reason this makes calculations work
@@ -306,13 +298,38 @@ const processInput = (inputValue: string) => {
       return;
   }
 
+  // 6. Handles plus/minus signs
+  // if (inputValue === "+/-") {
+  //     console.log("PLUSMINUS")
+  //     if (currentInput === "0" || currentInput === "Error") return;
+  //     setCurrentInput((parseFloat(currentInput) * -1).toString());
+  //     setX(currentInput);
+  //     return;
+  // }
+
   if (inputValue === "+/-") {
-      if (currentInput === "0" || currentInput === "Error") return;
-      setCurrentInput((parseFloat(currentInput) * -1).toString());
-      console.log("PLUSMINUS")
-      setX(currentInput);
-      return;
-  }
+    if (currentInput === "0" || currentInput === "Error") return;
+
+    let updatedValue;
+
+    // Check if currentInput is empty or is only an operation
+    if (currentInput === "" || currentInput === "+") {
+        updatedValue = "-";
+    } else if (currentInput === "-") {
+        updatedValue = "";
+    } else {
+        updatedValue = (parseFloat(currentInput) * -1).toString();
+    }
+
+    setCurrentInput(updatedValue);
+    setX(updatedValue);
+
+    return;
+}
+
+
+
+
 
   if (inputValue === "=") {
       if (x && y && operation) {
@@ -384,15 +401,21 @@ const handleKeyDown = (event: KeyboardEvent) => {
       'Backspace': 'DEL'
   };
 
-  const value = keyToValueMap[event.key];
+  let value = keyToValueMap[event.key];
+
+  // Special handling for signs:
+  if (['+', '-'].includes(event.key) && (currentInput === "" || ["+", "-"].includes(currentInput))) {
+    if (event.key === '+') {
+        value = 'AC'; // This will clear the current input.
+    } else if (event.key === '-') {
+        value = "+/-"; // This will toggle the sign.
+    }
+}
 
   if (value || /^[0-9]$/.test(event.key)) {
-    // If the key is in the map or is a number, proceed:
     event.preventDefault();
     processInput(value || event.key);
   } else {
-    // If the key is not in the map and not a number, ignore it:
-    console.log("Ignored input:", event.key);
     return;
   }
 };
