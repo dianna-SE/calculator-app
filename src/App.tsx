@@ -1,4 +1,4 @@
-import React, { useState, KeyboardEvent } from 'react';
+import React, { useState, useEffect, KeyboardEvent } from 'react';
 import "./App.css";
 
 
@@ -8,9 +8,6 @@ function App() {
   const [operation, setOperation] = useState<string | null>(null);
   const [currentInput, setCurrentInput] = useState<string>("");
   const [appendedString, setAppendedString] = useState<string>("");
-
-
-
 
   const buttonConfig = [
     [
@@ -201,7 +198,6 @@ const computeResult = (x: string, y: string, operation: string): string => {
     case "%":
       return evaluateModulo(x, y, operation).value.toString();
     case "√":
-      console.log("SOLVING RADICAL")
       return evaluateRadical(x, y, operation).value.toString();
     default:
       return "";
@@ -209,13 +205,13 @@ const computeResult = (x: string, y: string, operation: string): string => {
 };
 
 
-const canAppendNumber = (value: string) => {
-  if (value.length >= 19) {
-    console.log("Max input length reached!");
-    return false;
-  }
-  return true;
-};
+// const canAppendNumber = (value: string) => {
+//   if (value.length >= 19) {
+//     console.log("Max input length reached!");
+//     return false;
+//   }
+//   return true;
+// };
 
 
 
@@ -225,6 +221,14 @@ const processInput = (inputValue: string) => {
   console.log("operation", operation)
   console.log("INPUT: ", inputValue)
   console.log("appendedString", appendedString)
+
+  let manualX = null;
+
+  if (inputValue === "√" && !manualX) {
+    console.log("Radical detected with manualX as falsy. Setting manualX to 1.");
+    manualX = "1";
+    console.log("Value of manualX after assignment: ", manualX);
+}
 
   // 1. Clears the input
   if (inputValue === "AC") {
@@ -285,11 +289,16 @@ const processInput = (inputValue: string) => {
   });
 
 
-
-
-
   // 5. Handles first occurrence operation checks
-  if (["+", "-", "x", "/", "^", "%", "√"].includes(inputValue)) {
+  // if (["+", "-", "x", "/", "^", "%", "√"].includes(inputValue)) {
+    if (isOperation(inputValue)) {
+
+      if (inputValue === "√" && x === null) {
+        console.log("Radical detected with x as falsy. Setting x to 1.");
+        setX("1");
+        console.log("Value of x after setX: ", x); // This might still show the old value because of async updates
+    }
+
       if (operation && x && currentInput) {
         // Reached valid input, proceed with calculation
         const result = computeResult(x, currentInput, operation);
@@ -338,19 +347,6 @@ const processInput = (inputValue: string) => {
     return;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   if (inputValue === "=") {
       if (x && y && operation) {
           let result;
@@ -364,15 +360,14 @@ const processInput = (inputValue: string) => {
               case "√": result = evaluateRadical(x, y, operation); break;
               default: return;
           }
+
           const formattedResult = formatResult(result.value.toString());
           if (result.status === "OVERFLOW") {
-            console.log("OVERFLOW")
               setCurrentInput("Overflow");
               setX(null);
               setY(null);
               setOperation(null);
           } else {
-            console.log("NOTOVERFLOW")
               setCurrentInput(formattedResult);
               setX(formattedResult);
               setY(null);
