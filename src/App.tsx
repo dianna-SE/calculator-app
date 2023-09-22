@@ -7,7 +7,6 @@ function App() {
   const [y, setY] = useState<string | null>(null);
   const [operation, setOperation] = useState<string | null>(null);
   const [currentInput, setCurrentInput] = useState<string>("");
-  const [isExpanded, setIsExpanded] = useState(false);
   const [appendedString, setAppendedString] = useState<string>("");
 
 
@@ -72,7 +71,6 @@ function App() {
           return { value: 0, status: "OK" };  // default case, can be adjusted as needed
       }
     
-      // We can add additional logic here to check for overflow, if required.
       return { value: result, status: "OK" };
     }
     
@@ -229,10 +227,10 @@ const processInput = (inputValue: string) => {
       return;
   }
 
-  if (inputValue === "<") {
-      setIsExpanded(prev => !prev);
-      return;
-  }
+  // if (inputValue === "<") {
+  //     setIsExpanded(prev => !prev);
+  //     return;
+  // }
 
   setAppendedString(prevAppendedString => {
       if (prevAppendedString === "Overflow") return "Overflow";
@@ -347,12 +345,6 @@ const handleButtonClick = (value: string) => {
 
 
 
-const handleDisplayClick = () => {
-  console.log("Input field was clicked");
-};
-
-
-
 
 return (
   
@@ -369,20 +361,32 @@ return (
           onChange={(e) => {
             const newValue = e.target.value;
       
+            
             if (newValue === "AC") {
-              setCurrentInput("");
-            } else if (currentInput === "Error") {
+              setCurrentInput(""); // Clear
+            } 
+            
+            else if (currentInput === "Error") {
+              setCurrentInput(newValue); //
+            } 
+            
+            else if (currentInput === "0" && /[0-9.]/.test(newValue)) {
               setCurrentInput(newValue);
-            } else if (currentInput === "0" && /[0-9.]/.test(newValue)) {
-            // Replace "0" with the new input value
-              setCurrentInput(newValue);
-            } else if (newValue === "") {
+            } 
+            
+            else if (newValue === "") {
               setCurrentInput("0"); // Restore "0" if the input is empty
-            } else if (newValue.startsWith("0.") || newValue.startsWith("-0.")) {
+            } 
+            
+            else if (newValue.startsWith("0.") || newValue.startsWith("-0.")) {
               setCurrentInput(newValue);
-            } else if (newValue.startsWith("0") || newValue.startsWith("-0")) {
+            } 
+            
+            else if (newValue.startsWith("0") || newValue.startsWith("-0")) {
               setCurrentInput(newValue.slice(1));
-            } else {
+            } 
+            
+            else {
               setCurrentInput(newValue);
             }
           }}
@@ -404,18 +408,9 @@ return (
 
 
       <div className="display-body">
-        <button className="display-screen" onClick={handleDisplayClick}>
+        <button className="display-screen">
           {appendedString === "" 
               ? <p className="placeholder-text"></p>
-              : <p>{appendedString}</p>}
-        </button>
-      </div>
-
-
-      <div className={`expanded-section ${isExpanded ? 'visible' : ''}`}>
-        <button className="display-screen" onClick={handleDisplayClick}>
-          {appendedString === "" 
-              ? <p className="placeholder-text">History</p>
               : <p>{appendedString}</p>}
         </button>
       </div>
