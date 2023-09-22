@@ -43,6 +43,7 @@ h1 {
   flex-wrap: wrap;
 }
 
+
 #calculator-input {
   display: flex;
   text-align: right;
@@ -52,6 +53,7 @@ h1 {
   border-radius: 10px;
   border: 1px solid rgba(var(--base-color-rgb), 0.4);
   margin-bottom: 20px;
+  color: rgb(108, 108, 108);
   font-size: 2rem;
   font-family:Arial, Helvetica, sans-serif;
   letter-spacing: 0.1rem;
@@ -70,7 +72,7 @@ h1 {
   transition: 0s;
   width: calc(25% - 4px);  
   height: 50px; 
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   
 }
 
@@ -91,7 +93,7 @@ button {
   font-size: 30px;  
   padding: 10px 20px;    
   border: none;          
-  background-color: #89abc2; 
+  background-color: #7d94a5; 
   color: white;       
   cursor: pointer;    
   border-radius: 5px;   
@@ -107,8 +109,22 @@ button {
   flex-direction: column;
 }
 
+.enter-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;  
+  padding: 10px 20px;    
+  border: none;          
+  background-color: #89abc2; 
+  color: white;       
+  cursor: pointer;    
+  border-radius: 5px;   
+  transition: background-color 0.3s; 
+}
+
 .down-arrow {
-  width: 38px;       
+  width: 50px;       
   height: 18px;    
   display: block;
 }
@@ -131,7 +147,19 @@ button {
   font-family:Arial, Helvetica, sans-serif;
   letter-spacing: 0.1rem;
   background-color: #89abc2; 
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+}
+
+.expanded-section {
+  opacity: 0;
+  height: 0; 
+  overflow: hidden;  
+  transition: opacity 0.3s, height 0.5s;  
+}
+
+.expanded-section.visible {
+  opacity: 1;
+  height: auto;  
 }
 
 .expanded-section>button {

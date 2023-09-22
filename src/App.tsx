@@ -9,9 +9,8 @@ function App() {
   const [currentInput, setCurrentInput] = useState<string>("");
   const [isExpanded, setIsExpanded] = useState(false);
   const [appendedString, setAppendedString] = useState<string>("");
-  const [plusMinusClicked, setPlusMinusClicked] = useState(false);
   const [sqrtClicked, setSqrtClicked] = useState(false);
-  const [percentClicked, setPercentClicked] = useState(false);
+  const [moduloClicked, setModuloClicked] = useState(false);
 
 
   const buttonConfig = [
@@ -49,32 +48,32 @@ function App() {
 
 
     // displays additional buttons when expanding calculator
-    const expandedDisplay = [
-      [
-        { display: "1/x", value: "1/(" },
-        { display: "√2", value: "sqrt(2)" },
-        { display: "√3", value: "sqrt(3)" },
-        { display: "log", value: "log(" },
-      ],
-      [
-        { display: "ln", value: "ln(" },
-        { display: "log10", value: "log10(" },
-        { display: "rad", value: "rad" },
-        { display: "e", value: "e" },
-      ],
-      [
-        { display: "sin", value: "sin(" },
-        { display: "cos", value: "cos(" },
-        { display: "tan", value: "tan(" },
-        { display: "π", value: "π" }
-      ],
-      [
-        { display: "sinh", value: "sinh(" },
-        { display: "cosh", value: "cosh(" },
-        { display: "tanh", value: "tanh(" },
-        { display: "%", value: "%" }
-      ]
-    ];  
+    // const expandedDisplay = [
+    //   [
+    //     { display: "1/x", value: "1/(" },
+    //     { display: "√2", value: "sqrt(2)" },
+    //     { display: "√3", value: "sqrt(3)" },
+    //     { display: "log", value: "log(" },
+    //   ],
+    //   [
+    //     { display: "ln", value: "ln(" },
+    //     { display: "log10", value: "log10(" },
+    //     { display: "rad", value: "rad" },
+    //     { display: "e", value: "e" },
+    //   ],
+    //   [
+    //     { display: "sin", value: "sin(" },
+    //     { display: "cos", value: "cos(" },
+    //     { display: "tan", value: "tan(" },
+    //     { display: "π", value: "π" }
+    //   ],
+    //   [
+    //     { display: "sinh", value: "sinh(" },
+    //     { display: "cosh", value: "cosh(" },
+    //     { display: "tanh", value: "tanh(" },
+    //     { display: "%", value: "%" }
+    //   ]
+    // ];  
   
     
 
@@ -178,10 +177,10 @@ function App() {
     }
 
     // Check if value is present in buttonConfig or expandedDisplay, or is a valid character for the calculator
-    const isValuePresent = buttonConfig.flat().some(btn => btn.value === value) || expandedDisplay.flat().some(btn => btn.value === value);
-      if (isValuePresent || /[0-9+\-*/().^]/.test(value)) {
-        handleButtonClick(value);
-    }
+    // const isValuePresent = buttonConfig.flat().some(btn => btn.value === value) || expandedDisplay.flat().some(btn => btn.value === value);
+    //   if (isValuePresent || /[0-9+\-*/().^]/.test(value)) {
+    //     handleButtonClick(value);
+    // }
 };
 
 
@@ -212,23 +211,28 @@ const handleButtonClick = (value: string) => {
 
 
   if (value === "AC") {
-    setCurrentInput("0");
+    setCurrentInput("");
     setX(null);
     setY(null);
     setOperation(null);
-    setAppendedString("0")
-
+    setAppendedString("")
     return; 
   }
 
   
-  if (["+", "-", "x", "/", "^"].includes(value)) {
+  if (["+", "-", "x", "/", "^", "√"].includes(value)) {
     if (x !== null) {
       setOperation(value);
+
     }
 
     return;
   }
+
+  if (value === "√") {
+    console.log("radical")
+  }
+
 
 
 
@@ -310,84 +314,59 @@ if (operation === null) {
 return (
   
   <div className="main">
+    <h1>Calculator</h1>
     <section className="calculator-body">
-    <input 
-      type="text" 
-      value={currentInput} 
-      id="calculator-input" 
-      placeholder="0"
-      onKeyDown={handleKeyDown} 
+      <input 
+          type="text" 
+          value={currentInput} 
+          id="calculator-input" 
+          placeholder="0"
+          onKeyDown={handleKeyDown} 
 
-      onChange={(e) => {
-        const newValue = e.target.value;
+          onChange={(e) => {
+            const newValue = e.target.value;
       
-        if (newValue === "AC") {
-          setCurrentInput("0");
-        } else if (currentInput === "Error") {
-          setCurrentInput(newValue);
-        } else if (currentInput === "0" && /[0-9.]/.test(newValue)) {
-          // Replace "0" with the new input value
-          setCurrentInput(newValue);
-        } else if (newValue === "") {
-          setCurrentInput("0"); // Restore "0" if the input is empty
-        } else if (newValue.startsWith("0.") || newValue.startsWith("-0.")) {
-          setCurrentInput(newValue);
-        } else if (newValue.startsWith("0") || newValue.startsWith("-0")) {
-          setCurrentInput(newValue.slice(1));
-        } else {
-          setCurrentInput(newValue);
-        }
-      }}
+            if (newValue === "AC") {
+              setCurrentInput("0");
+            } else if (currentInput === "Error") {
+              setCurrentInput(newValue);
+            } else if (currentInput === "0" && /[0-9.]/.test(newValue)) {
+            // Replace "0" with the new input value
+              setCurrentInput(newValue);
+            } else if (newValue === "") {
+              setCurrentInput("0"); // Restore "0" if the input is empty
+            } else if (newValue.startsWith("0.") || newValue.startsWith("-0.")) {
+              setCurrentInput(newValue);
+            } else if (newValue.startsWith("0") || newValue.startsWith("-0")) {
+              setCurrentInput(newValue.slice(1));
+            } else {
+              setCurrentInput(newValue);
+            }
+          }}
 
-      onFocus={() => {
-        if (currentInput === "0" || currentInput === "Error") {
-          setCurrentInput("");
-        }
-      }}
-
-
-      onBlur={() => {
-        if (currentInput === "") {
-          setCurrentInput("0");
-        }
-      }}
-    />
+        onFocus={() => {
+          if (currentInput === "0" || currentInput === "Error") {
+            setCurrentInput("");
+          }
+          }}
 
 
-      {/* displays additional set of buttons when calculator is expanded */}
-      {/* {isExpanded && 
-        <div className="expanded-section">
-            <button className="display-screen">
-                <p>{appendedString}</p>
-            </button>
+        onBlur={() => {
+          if (currentInput === "") {
+              setCurrentInput("0");
+            }
+          }}
 
-            <input 
-                type="text" 
-                value={appendedString} 
-                id="display-input" 
-                placeholder="No history"
-                className="display-screen"
-                onClick={handleInputClick}
-                readOnly
-            /> 
-
-        </div>
-      } */}
+      />
 
 
-
-
-      {isExpanded && 
-        <div className="expanded-section">
-          <button className="display-screen" onClick={handleDisplayClick}>
-            {appendedString === "" 
+      <div className={`expanded-section ${isExpanded ? 'visible' : ''}`}>
+        <button className="display-screen" onClick={handleDisplayClick}>
+          {appendedString === "" 
               ? <p className="placeholder-text">Display</p>
               : <p>{appendedString}</p>}
-          </button>
-        </div>  
-      } 
-
-
+        </button>
+      </div>
 
 
       <div className="calculator-section">
@@ -402,9 +381,11 @@ return (
         ))}
       </div>
 
+
       <div>
-        <button className="calculator-button wide-arrow-btn" onClick={() => handleButtonClick("=")}>=</button>
+        <button className="calculator-button enter-btn" onClick={() => handleButtonClick("=")}>=</button>
       </div>
+
 
       <div>
         <button className="calculator-button wide-arrow-btn" onClick={() => handleButtonClick("<")}>
@@ -412,10 +393,7 @@ return (
         </button>
       </div>
 
-
-
     </section>
-
 
   </div>
 );
