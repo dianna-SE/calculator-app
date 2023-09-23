@@ -44,6 +44,9 @@ Several functionalities were implemented, along with additional functionalities 
 * modulo(%): 'shift' + '5'
 * radical(√): 'r'
 * +/-: toggle '-'
+* Delete operand: 'Backspace'
+* Solve expression (=): 'Enter' OR '='
+* Clear: 'ESC'
   
 ---
 **Planning & Implementation**:
