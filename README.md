@@ -1,31 +1,44 @@
 # Calculator App
+This is a calculator app built using React.js and TypeScript (using no other third-party libraries). 
+
+This calculator performs several basic functionalities:
+* addition
+* subtraction
+* multiplication
+* division
+* exponentiation
+* modulo
+* radical
+*  Other misc, functionalities include displaying a history feature.
+
+The app can be found here: https://650e3e80fb627700088e0624--sparkly-selkie-487e61.netlify.app/
 
 ## Project Instructions
-
-This is a calculator app built using React.js and TypeScript (usning no other third-party libraries). 
-
-
-Calculator Functionalities:
-* Addition
-* Subtraction
-* Multiplication
-* Division
-* Exponentiation
-* Modulo
-* Radical
-
-  Other calculator functionalities include delete, clear (ESC), and displaying a history feature.
+1. Simply open your IDE and in the terminal and run 'npm start'.
 
 ## Development Overview
 
 The development for this app is structured into several components:
 * Objective
+
+  
 * Planning
+  
 * Design
+  
 * Functionalities
+  
 * Error Handling
-* Miscellaneous
+  
+* Miscellaneous (Modularization)
+  
 * Testing
+Testing involves many different test cases. This involves testing each unique case, such as if a user enters operations in multiple successions, or if expressions are calculated through different arithmetic operations in a row.
+
+Testing involves debugging using Chrome DevTools to monitor the output displayed using the console.log(). This is used to observe the activity through key presses or clicks. Status checks are spread out throughout the code in order for the user or developer to observe the event when an action is triggered.
+
+Another debugging method used is observing React's runtime error. As I am more familiar with JavaScript than TypeScript, this is particularly useful in observing the different issues that occur with pieces of code. This is also used to monitor mistakes with code syntax, variables, types, and etc.
+
 
 ### `npm start`
 
