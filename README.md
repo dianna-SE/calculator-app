@@ -34,7 +34,8 @@ Several functionalities were implemented, along with additional functionalities 
 * modulo
 * radical
 * other misc, functionalities include displaying a history feature and a plus/minus function.
-
+  
+---
 **Planning & Implementation**:
 First, I sketched a rough design of how the calculator should look, along with the buttons that are laid out. Design is arguably one of the primal features of accessibility. Accessibility comes with being able to use the application with little to no learning curve and is inviting for any and all users. The design should look very simple and clean, essentially a good user interface.
 
