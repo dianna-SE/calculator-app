@@ -418,7 +418,7 @@ const processInput = (inputValue: string) => {
 
 
   const resetCalculator = () => {
-    console.log("Resetting display.")
+    console.log("Resetting display. Display flag set to false.")
     setSolutionDisplayed(false);
     setCurrentInput(inputValue)
     setX(inputValue);
@@ -427,12 +427,11 @@ const processInput = (inputValue: string) => {
     
   };
 
-
-  if (solutionDisplayed && isNumber(inputValue)) {
+  if (solutionDisplayed && isNumber(inputValue) && (!x || !operation)) {
     console.log("Solution exists, trigger reset.");
     resetCalculator();
     return; 
-  }
+}
 
 
   // Appends values to x or y based on conditions
