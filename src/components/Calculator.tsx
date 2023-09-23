@@ -229,6 +229,7 @@ const Calculator: React.FC = () => {
       setY(null);
       setOperation(null);
       setDisplayHistory(""); // added this to reset in edge case overflow
+      setSolutionDisplayed(false);
       return;
   }
   
