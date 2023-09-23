@@ -26,23 +26,23 @@ The main objective is to develop a calculator app that focuses on keyboard acces
 
 **Functionalities**:
 Several functionalities were implemented, along with additional functionalities I felt many people might like to use. These functionalities include:
-* addition
-* subtraction
-* multiplication
-* division
-* exponentiation
-* modulo
-* radical
-* other misc, functionalities include displaying a history feature and a plus/minus function.
+* Addition
+* Subtraction
+* Multiplication
+* Division
+* Exponentiation
+* Modulo
+* Radical
+* Other misc, functionalities include displaying a history feature and a plus/minus function.
 
 **Keyboard Functions**:
-* addition(+): 'shift' + '='
-* subtraction(-): '-'
-* multiplication(*): 'shift' + '8' OR 'x'
-* division(/): '/'
-* exponentiation(^): 'shift' + '6'
-* modulo(%): 'shift' + '5'
-* radical(√): 'r'
+* Addition(+): 'shift' + '='
+* Subtraction(-): '-'
+* Multiplication(*): 'shift' + '8' OR 'x'
+* Division(/): '/'
+* Exponentiation(^): 'shift' + '6'
+* Modulo(%): 'shift' + '5'
+* Radical(√): 'r'
 * +/-: toggle '-'
 * Delete operand: 'Backspace'
 * Solve expression (=): 'Enter' OR '='
