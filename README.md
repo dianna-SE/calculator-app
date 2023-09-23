@@ -34,6 +34,16 @@ Several functionalities were implemented, along with additional functionalities 
 * modulo
 * radical
 * other misc, functionalities include displaying a history feature and a plus/minus function.
+
+Keyboard functionalities:
+* addition(+): 'shift' + '='
+* subtraction(-): '-'
+* multiplication(*): 'shift' + '8' OR 'x'
+* division(/): '/'
+* exponentiation(^): 'shift' + '6'
+* modulo(%): 'shift' + '5'
+* radical(√): 'r'
+* +/-: toggle '-'
   
 ---
 **Planning & Implementation**:
