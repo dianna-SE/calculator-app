@@ -1,6 +1,6 @@
 # Calculator App
 This is a calculator app built using React.js and TypeScript (using no other third-party libraries). 
-The app can be found here: https://650e3e80fb627700088e0624--sparkly-selkie-487e61.netlify.app/
+The app can be found here: [https://650e3e80fb627700088e0624--sparkly-selkie-487e61.netlify.app/](https://650f30fa3f1bf3000875bc77--sparkly-selkie-487e61.netlify.app/)
 <img width="705" alt="Screenshot 2023-09-22 at 6 48 54 PM" src="https://github.com/dianna-SE/calculator-app/assets/97206862/08993a53-a85d-4453-9fda-c381ea5d73f9">
 
 
