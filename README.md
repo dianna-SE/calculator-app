@@ -9,7 +9,7 @@ The app can be found here: https://650e3e80fb627700088e0624--sparkly-selkie-487e
 - [Calculator](#Calculator)
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
-  - [Development Overview](#features)
+  - [Development Overview](#deployment-overview)
   - [Acknowledgments](#acknowledgments)
 
 
