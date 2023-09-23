@@ -43,7 +43,8 @@ I sketched a rough design of how the calculator should look, along with the butt
 I broke down each task into steps. This involves implementing the functionalities, and later the keyboard and mouse features. Since the keyboard feature is emphasized the most for this project, I had to be careful with handling this feature and ensure that any potential outcomes were handled accordingly.
 
 Testing becomes the forefront of the process. I encountered many different unique cases that I would not have thought of as I implemented the features, and so these features had to be adjusted and handled accordingly. Error handling and debugging were crucial in problem identification, problem-solving, and conflict resolution.
-  
+
+---
 **Testing & Error Handling**:
 Testing involves many different test cases. This involves testing each unique case, such as if a user enters operations in multiple successions, or if expressions are calculated through different arithmetic operations in a row.
 
@@ -51,11 +52,13 @@ Testing involves debugging using Chrome DevTools to monitor the output displayed
 
 Another debugging method used is observing React's runtime development. As I am more familiar with JavaScript than TypeScript, this is particularly useful in observing the different issues that occur with pieces of code. This is also used to monitor mistakes with code syntax, variables, types, etc.
 
+---
 **Structure & Modularization**:
 Developing an application can become very complex. I have tried my best to modularize pieces of code with different features and functionalities so that the code is easier to read. Comments are displayed throughout the code to help assist with understanding what each block of code is doing.
 
 As I developed more features for the calculator, I took into consideration different versions. Because of this, each was separated into different branches. Eventually, once the calculator was complete, it was ready to be merged into the main branch for official deployment.
 
+---
 **Deployment**:
 Several deployment platforms were considered before I ultimately chose Netlify. I have deployed websites in different platforms and I found that Netlify was by far one of the simplest platforms to deploy a website from. As this is a simple calculator application, I felt it optimal to deploy it here.
 
