@@ -1,44 +1,49 @@
-# Calculator App
+# Calculator
 
-## Project Instructions
+A brief description of your project.
 
-This is a calculator app built using React.js and TypeScript (usning no other third-party libraries). 
+## Table of Contents
 
+- [Calculator](#Calculator)
+  - [Table of Contents](#table-of-contents)
+  - [About](#about)
+  - [Features](#features)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+    - [Development(#development)
+  - [Usage](#usage)
+  - [Acknowledgments](#acknowledgments)
 
-Calculator Functionalities:
-* Addition
-* Subtraction
-* Multiplication
-* Division
-* Exponentiation
-* Modulo
-* Radical
+## About
 
-  Other calculator functionalities include delete, clear (ESC), and displaying a history feature.
+Provide a short and concise description of your project. Explain what it does, why it exists, and any goals or objectives it fulfills.
 
-## Development Overview
+## Features
 
-The development for this app is structured into several components:
-* Objective
-* Planning
-* Design
-* Functionalities
-* Error Handling
-* Miscellaneous
-* Testing
+List the key features of your project. You can use bullet points for this section.
 
-### `npm start`
+- Feature 1
+- Feature 2
+- ...
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Getting Started
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Explain how to get started with your project. Provide instructions for setting up and running the project on a local machine.
 
-### `npm run build`
+### Prerequisites
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+List any software or tools that need to be installed before using your project. Include versions if necessary.
+### Development
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed! The easiest way to deploy will likely either be to use [Github Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages), but you can use any hosting option. To learn more about deployment, see the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment).
+### Installation
+
+Provide step-by-step installation instructions. Include code snippets if applicable.
+
+## Usage
+
+Demonstrate how to use your project. Include examples, screenshots, or code samples to help users understand how to interact with your project.
+
+## Acknowledgments
+Starter code from Stefan:
+https://github.com/StefanTodoran/teutsch-technical
