@@ -50,6 +50,11 @@ const Calculator: React.FC = () => {
       status: "OK" | "OVERFLOW" | "ERROR";
       message?: string;
   }
+
+    // Rounding results
+    function roundResult(value: number): number {
+      return parseFloat(value.toFixed(4));
+  }
       
       
     // Handle addition and subtraction operations
@@ -58,17 +63,15 @@ const Calculator: React.FC = () => {
       
         switch (operation) {
           case "+":
-            result = parseFloat(x) + parseFloat(y);
-            result = parseFloat(result.toFixed(4));  
+            result = roundResult(parseFloat(x) + parseFloat(y));
             break;
   
           case "-":
-            result = parseFloat(x) - parseFloat(y);
-            result = parseFloat(result.toFixed(4));  
+            result = roundResult(parseFloat(x) - parseFloat(y)); 
             break;
   
-          default:
-            return { value: 0, status: "OK" };  // default case, can be adjusted as needed
+            default:
+              return { value: 0, status: "ERROR", message: "Unknown operation" };
         }
       
         return { value: result, status: "OK" };
@@ -83,20 +86,18 @@ const Calculator: React.FC = () => {
       
         switch (operation) {
           case "x":
-            result = parseFloat(x) * parseFloat(y);
-            result = parseFloat(result.toFixed(4));  
+            result = roundResult(parseFloat(x) * parseFloat(y));
             break;
   
           case "/":
             if(parseFloat(y) === 0) {  // Handle division by zero
               return { value: NaN, status: "ERROR" };
             }
-            result = parseFloat(x) / parseFloat(y);
-            result = parseFloat(result.toFixed(4));  
+            result = roundResult(parseFloat(x) / parseFloat(y));
             break;
   
-          default:
-            return { value: 0, status: "OK" };  // default case, can be adjusted as needed
+            default:
+              return { value: 0, status: "ERROR", message: "Unknown operation" };
         }
           
         return { value: result, status: "OK" };
@@ -110,16 +111,15 @@ const Calculator: React.FC = () => {
     
         switch (operation) {
             case "^":
-                result = parseFloat(x) ** parseFloat(y);
-                result = parseFloat(result.toFixed(4));  
+                result = roundResult(parseFloat(x) ** parseFloat(y)); 
                 
                 if (result > Number.MAX_SAFE_INTEGER) {
-                    return { value: 0, status: "OVERFLOW" };
+                  return { value: NaN, status: "ERROR", message: "Result exceeds maximum safe integer" };
                 }
                 break;
     
-            default:
-                return { value: 0, status: "OK" };  // default case, can be adjusted as needed
+                default:
+                  return { value: 0, status: "ERROR", message: "Unknown operation" };
         }
     
         return { value: result, status: "OK" };
@@ -132,12 +132,11 @@ const Calculator: React.FC = () => {
   
       switch (operation) {
           case "%":
-              result = parseFloat(x) % parseFloat(y);
-              result = parseFloat(result.toFixed(4));  
+              result = roundResult(parseFloat(x) % parseFloat(y)); 
               break;
   
-          default:
-              return { value: 0, status: "OK" };  
+              default:
+                return { value: 0, status: "ERROR", message: "Unknown operation" };
       }
   
       return { value: result, status: "OK" };
@@ -154,16 +153,10 @@ const Calculator: React.FC = () => {
       let radicand = parseFloat(y);
   
       if (radicand < 0) {
-  
-          return { 
-              value: NaN, 
-              status: "ERROR",
-              message: "Cannot compute square root of negative number" 
-          };
+        return { value: NaN, status: "ERROR", message: "Cannot compute negative number" };
       }
   
-      result = multiplier * Math.sqrt(radicand);
-      result = parseFloat(result.toFixed(4));  
+      result = roundResult(multiplier * Math.sqrt(radicand));
       break;
   
   
@@ -179,14 +172,13 @@ const Calculator: React.FC = () => {
   function formatResult(value: string): string {
     if (value.length > 18) {
       const numberValue = parseFloat(value);
-      return numberValue.toExponential(4); // 10 decimals for precision
+      return numberValue.toExponential(4); // rounds to 4 places
     }
     return value;
   }
   
-  
+  // Using regex to check if the value is a number
   function isNumber(value: string): boolean {
-    // Using a regular expression to check if the value is a number.
     return /^\d+$/.test(value);
   }
   
@@ -195,11 +187,9 @@ const Calculator: React.FC = () => {
   const computeResult = (x: string, y: string, operation: string): string => {
     switch (operation) {
       case "+":
-        return evaluateAddSubtract(x, y, operation).value.toString();
       case "-":
         return evaluateAddSubtract(x, y, operation).value.toString();
       case "x":
-        return evaluateMultiplyDivide(x, y, operation).value.toString();
       case "/":
         return evaluateMultiplyDivide(x, y, operation).value.toString();
       case "^":
@@ -219,6 +209,18 @@ const Calculator: React.FC = () => {
     console.log("y: ", y)
     console.log("operation: ", operation)
     console.log("Input: ", inputValue)
+
+
+    // Resets the display if flag and number is triggered (restart calculation)
+    const resetCalculator = () => {
+      console.log("Resetting display. Display flag set to false.")
+      setSolutionDisplayed(false);
+      setCurrentInput(inputValue)
+      setX(inputValue);
+      setDisplayHistory(inputValue);
+      return;
+          
+    };
   
   
   
@@ -244,9 +246,13 @@ const Calculator: React.FC = () => {
   
   
   
-    // 3. Handles decimal checks
+    // 3. Handles decimal inputs
     if (inputValue === ".") {
-      // Handle decimal inputs
+          // If the solution is displayed and user tries to enter a decimal, reset.
+      if (solutionDisplayed) {
+        resetCalculator();
+        return;
+    }
       if (currentInput.includes(".")) {
         console.log("Already has a decimal");
         return;
@@ -414,19 +420,8 @@ const Calculator: React.FC = () => {
         return;
     }
   
-  
-  
-    // Resets the display if flag and number is triggered (restart calculation)
-    const resetCalculator = () => {
-      console.log("Resetting display. Display flag set to false.")
-      setSolutionDisplayed(false);
-      setCurrentInput(inputValue)
-      setX(inputValue);
-      setDisplayHistory(inputValue);
-      return;
-      
-    };
-  
+
+    // Trigger reset since solution exists
     if (solutionDisplayed && isNumber(inputValue) && (!x || !operation)) {
       console.log("Solution exists, trigger reset.");
       resetCalculator();
