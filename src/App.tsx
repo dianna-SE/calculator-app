@@ -87,7 +87,7 @@ function App() {
 
         case "/":
           if(parseFloat(y) === 0) {  // Handle division by zero
-            return { value: 0, status: "OVERFLOW" };
+            return { value: NaN, status: "ERROR" };
           }
           result = parseFloat(x) / parseFloat(y);
           result = parseFloat(result.toFixed(4));  
@@ -178,6 +178,12 @@ function formatResult(value: string): string {
     return numberValue.toExponential(4); // 10 decimals for precision
   }
   return value;
+}
+
+
+function isNumber(value: string): boolean {
+  // Using a regular expression to check if the value is a number.
+  return /^\d+$/.test(value);
 }
 
 
@@ -388,11 +394,15 @@ const processInput = (inputValue: string) => {
           }
 
           const formattedResult = formatResult(result.value.toString());
-          if (result.status === "OVERFLOW") {
+          if (result.status === "OVERFLOW" || result.status === "ERROR") {
+            if (result.status === "ERROR") {
+              setCurrentInput("Error");
+            } else {
               setCurrentInput("Overflow");
-              setX(null);
-              setY(null);
-              setOperation(null);
+            }
+            setX(null);
+            setY(null);
+            setOperation(null);
           } else {
               setCurrentInput(formattedResult);
               setX(formattedResult);
@@ -402,6 +412,26 @@ const processInput = (inputValue: string) => {
       }
       setSolutionDisplayed(true);
       return;
+  }
+
+
+
+
+  const resetCalculator = () => {
+    console.log("Resetting display.")
+    setSolutionDisplayed(false);
+    setCurrentInput(inputValue)
+    setX(inputValue);
+    setDisplayHistory(inputValue);
+    return;
+    
+  };
+
+
+  if (solutionDisplayed && isNumber(inputValue)) {
+    console.log("Solution exists, trigger reset.");
+    resetCalculator();
+    return; 
   }
 
 
