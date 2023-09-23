@@ -1,24 +1,31 @@
-# Teutsch Partners Coding Take-home
+# Calculator App
 
 ## Project Instructions
 
-Test Create a calculator web app using React.js (and no other third-party libraries). The calculator should be capable of performing the following operations at a minimum (feel free to add more if you have time):
+This is a calculator app built using React.js and TypeScript (usning no other third-party libraries). 
 
+
+Calculator Functionalities:
 * Addition
 * Subtraction
 * Multiplication
 * Division
 * Exponentiation
+* Modulo
+* Radical
 
-The end user should be able to operate the calculator via both keyboard and mouse. You should (and will likely need to) give more attention to keyboard interaction. Accessibility is a key concern.
-
-You don't worry about messing around with BigInt to provide higher precision than regular JavaScript floats have by default.
-
-If you have any doubts or questions about our expectations for the project, please do not hesitate to reach out! Being proactive about clarifying development expectations is a necessity for the position! 
+  Other calculator functionalities include delete, clear (ESC), and displaying a history feature.
 
 ## Development Overview
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). Information on the commands you will need to know is provided below, but you can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+The development for this app is structured into several components:
+* Objective
+* Planning
+* Design
+* Functionalities
+* Error Handling
+* Miscellaneous
+* Testing
 
 ### `npm start`
 
