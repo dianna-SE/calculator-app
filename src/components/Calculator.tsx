@@ -500,7 +500,7 @@ const Calculator: React.FC = () => {
       return;
     }
   
-    if (currentInput.length == 0) {
+    if (currentInput.length === 0) {
       console.log("Unable to delete empty input.")
       return;
     }
