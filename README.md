@@ -35,7 +35,7 @@ Several functionalities were implemented, along with additional functionalities 
 * radical
 * other misc, functionalities include displaying a history feature and a plus/minus function.
 
-**Planning**:
+**Planning & Implementation**:
 First, I sketched a rough design of how the calculator should look, along with the buttons that are laid out. Design is arguably one of the primal features of accessibility. Accessibility comes with being able to use the application with little to no learning curve and is inviting for any and all users. The design should look very simple and clean, essentially a good user interface.
 
 Next, I broke down each task into steps. This involves implementing the functionalities, and later the keyboard and mouse features. Since the keyboard feature is emphasized the most for this project, I had to be careful with handling this feature and ensure that any potential outcomes were handled accordingly.
