@@ -35,7 +35,7 @@ Several functionalities were implemented, along with additional functionalities 
 * radical
 * other misc, functionalities include displaying a history feature and a plus/minus function.
 
-Keyboard functionalities:
+**Keyboard Functions**:
 * addition(+): 'shift' + '='
 * subtraction(-): '-'
 * multiplication(*): 'shift' + '8' OR 'x'
