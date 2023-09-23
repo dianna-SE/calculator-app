@@ -10,6 +10,7 @@ const Calculator: React.FC = () => {
     const [solutionDisplayed, setSolutionDisplayed] = useState(false);
   
   
+    // Displays button configuration
     const buttonConfig = [
       [
         { display: "AC", value: "AC" },
@@ -51,6 +52,7 @@ const Calculator: React.FC = () => {
   }
       
       
+    // Handle addition and subtraction operations
       function evaluateAddSubtract(x: string, y: string, operation: string): EvalResult {
         let result: number;
       
@@ -74,6 +76,7 @@ const Calculator: React.FC = () => {
       
       
       
+      // Handle multiplication and division operations
       function evaluateMultiplyDivide(x: string, y: string, operation: string): EvalResult {
         let result: number;
         
@@ -101,6 +104,7 @@ const Calculator: React.FC = () => {
       
   
   
+      // Handle exponentiation operations
       function evaluateExponentiation(x: string, y: string, operation: string): EvalResult {
         let result: number;
     
@@ -122,6 +126,7 @@ const Calculator: React.FC = () => {
     }
   
   
+    // Handle modulo operations
     function evaluateModulo(x: string, y: string, operation: string): EvalResult {
       let result: number;
   
@@ -139,7 +144,7 @@ const Calculator: React.FC = () => {
   }
   
   
-  
+  // Handle radical operations
   function evaluateRadical(x: string, y: string, operation: string): EvalResult {
     let result: number;
   
@@ -287,7 +292,6 @@ const Calculator: React.FC = () => {
   
   
     // 5. Handles conditions when operations are triggered
-    // if (["+", "-", "x", "/", "^", "%", "√"].includes(inputValue)) {
       if (isOperation(inputValue)) {
   
         if (inputValue === "√" && x === null) {
@@ -318,12 +322,11 @@ const Calculator: React.FC = () => {
   
     // Handles signed input (+/-) -- buttownDown
     if (inputValue === "+/-") {
-      // Check for empty input or an operation
       if (currentInput === "" || ["+", "-", "x", "/", "^", "%", "√"].includes(currentInput)) return;
   
       let updatedValue;
   
-      // Utility function to toggle sign
+      // Toggle signs
       const toggleSign = (value: string) => {
           if (value === "" || value === "+" || value === "-") {
               return "";
@@ -334,12 +337,12 @@ const Calculator: React.FC = () => {
           }
       };
   
-      // If y is being used
+      // y is being used
       if (operation !== null && y !== null) {
           updatedValue = toggleSign(y);
           setY(updatedValue);
       } 
-      // If only x is being used
+      // only x is being used
       else {
           updatedValue = toggleSign(currentInput);
           setX(updatedValue);
@@ -372,10 +375,7 @@ const Calculator: React.FC = () => {
       return;
   }
   
-  
-  
-  
-  
+
   
     // Calculates the expression once the "Enter" or "=" is triggered
     if (inputValue === "=") {
@@ -415,7 +415,7 @@ const Calculator: React.FC = () => {
   
   
   
-  
+    // Resets the display if flag and number is triggered (restart calculation)
     const resetCalculator = () => {
       console.log("Resetting display. Display flag set to false.")
       setSolutionDisplayed(false);
@@ -479,12 +479,11 @@ const Calculator: React.FC = () => {
     let value = keyToValueMap[event.key];
 
     if (event.key === "+" && event.shiftKey) {
-        console.log("shift + is doing AC???")
         setCurrentInput('+');
     }
     
   
-  // Handle delete
+  // Handle delete feature for keyboard
   if (value === 'DEL') {
     if (currentInput.length > 0) {
       setCurrentInput(prevInput => prevInput.slice(0, -1));

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, KeyboardEvent } from 'react';
+import React from 'react';
 import "./App.css";
 import Calculator from './components/Calculator';
 

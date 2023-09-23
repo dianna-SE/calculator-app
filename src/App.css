@@ -7,11 +7,6 @@ html {
 
   --base-color-rgb: 217, 217, 217;
   --base-color: rgb(var(--base-color-rgb));
-
-  --babyBlue: #adddff;
-  --dullBlue: #c4e6ff;
-
-  --burgandy: #961313;
 }
 
 body {
