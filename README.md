@@ -12,8 +12,7 @@ The app can be found here: [https://650e3e80fb627700088e0624--sparkly-selkie-487
   - [Installation](#installation)
   - [Development Overview](#deployment-overview)
   - [Acknowledgments](#acknowledgments)
-
-
+    
 ## Installation
 1. Simply open your IDE and in the terminal and run:
 ```npm start```
