@@ -46,7 +46,10 @@ Several functionalities were implemented, along with additional functionalities 
 * Delete operand: 'Backspace'
 * Solve expression (=): 'Enter' OR '='
 * Clear: 'ESC'
-* (There is a minor bug with toggling the negative sign before entering a value using the keyboard)
+
+Several things to note:
+* There is a minor bug with toggling the negative sign before entering a value using the keyboard.
+* The display feature shows the history of what you've typed and does not show DELETE cases.
 
   
 ---
