@@ -43,10 +43,11 @@ Several functionalities were implemented, along with additional functionalities 
 * Exponentiation(^): 'shift' + '6'
 * Modulo(%): 'shift' + '5'
 * Radical(√): 'r'
-* +/-: toggle '-'
+* +/-: toggle '-' (There is a minor bug with toggling +/- using the keyboard)
 * Delete operand: 'Backspace'
 * Solve expression (=): 'Enter' OR '='
 * Clear: 'ESC'
+
   
 ---
 **Planning & Implementation**:
