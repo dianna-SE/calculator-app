@@ -2,6 +2,7 @@
 import React, { useState, KeyboardEvent } from 'react';
 import Button from './Button'
 import Display from './Display';
+import CalculatorInput from './CalculatorInput';
 
 const Calculator: React.FC = () => {
     const [x, setX] = useState<string | null>(null);
@@ -534,7 +535,7 @@ const Calculator: React.FC = () => {
     return (
 
     <section className="calculator-body">
-      <input 
+      {/* <input 
           type="text" 
           value={currentInput || '0'}
           id="calculator-input" 
@@ -587,15 +588,20 @@ const Calculator: React.FC = () => {
             }
           }}
 
-      />
+      /> */}
+
+    <CalculatorInput 
+      currentInput={currentInput}
+      setCurrentInput={setCurrentInput}
+      handleKeyDown={handleKeyDown}
+/>
+
+
+
 
 
       <div className="display-body">
         <button className="display-screen">
-          {/* {displayHistory === "" 
-              ? <p className="placeholder-text"></p>
-              : <p>{displayHistory}</p>} */}
-
           <Display displayHistory={displayHistory} />
         </button>
       </div>
@@ -604,12 +610,6 @@ const Calculator: React.FC = () => {
       <div className="calculator-section">
         {buttonConfig.map((row, rowIndex) => (
         <div key={`buttonRow-${rowIndex}`}>
-          {/* {row.map((button, btnIndex) => (
-              <button key={`btn-${btnIndex}`} className="calculator-button" onClick={() => handleButtonClick(button.value)}>
-                {button.display}
-              </button>
-            ))} */}
-
           {row.map((button, btnIndex) => (
                 <Button 
                     key={`btn-${btnIndex}`} 
