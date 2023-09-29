@@ -252,44 +252,7 @@ const Calculator: React.FC = () => {
       return;
   }
   
-
-  
     // Calculates the expression once the "Enter" or "=" is triggered
-    // if (inputValue === "=") {
-    //     if (x && y && operation) {
-    //         let result;
-    //         switch (operation) {
-    //             case "+":
-    //             case "-": result = evaluateAddSubtract(x, y, operation); break;
-    //             case "x":
-    //             case "/": result = evaluateMultiplyDivide(x, y, operation); break;
-    //             case "^": result = evaluateExponentiation(x, y, operation); break;
-    //             case "%": result = evaluateModulo(x, y, operation); break;
-    //             case "√": result = evaluateRadical(x, y, operation); break;
-    //             default: return;
-    //         }
-  
-    //         const formattedResult = formatResult(result.value.toString());
-    //         if (result.status === "OVERFLOW" || result.status === "ERROR") {
-    //           if (result.status === "ERROR") {
-    //             setCurrentInput("Error");
-    //           } else {
-    //             setCurrentInput("Overflow");
-    //           }
-    //           setX(null);
-    //           setY(null);
-    //           setOperation(null);
-    //         } else {
-    //             setCurrentInput(formattedResult);
-    //             setX(formattedResult);
-    //             setY(null);
-    //             setOperation(null);
-    //         }
-    //     }
-    //     setSolutionDisplayed(true);
-    //     return;
-    // }
-
     if (inputValue === "=") {
       if (x && y && operation) {
         const result = handleArithmetic(x, y, operation);
@@ -350,7 +313,7 @@ const Calculator: React.FC = () => {
   };
 
   
-  // Handles calculations using mouse 
+  // Handles calculations using mouse/button click
   const handleButtonClick = (value: string) => {
     processInput(value);
   };
