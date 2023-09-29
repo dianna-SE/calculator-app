@@ -4,6 +4,7 @@ import Button from './Button'
 import Display from './Display';
 import CalculatorInput from './CalculatorInput';
 import handleKeyDown from '../util/handleKeyDown';
+import { handleArithmetic, formatResult } from '../util/handleArithmetic';
 
 
 const Calculator: React.FC = () => {
@@ -50,139 +51,141 @@ const Calculator: React.FC = () => {
     ];
     
   
-    interface EvalResult {
-      value: number;
-      status: "OK" | "OVERFLOW" | "ERROR";
-      message?: string;
-  }
+  //   interface EvalResult {
+  //     value: number;
+  //     status: "OK" | "OVERFLOW" | "ERROR";
+  //     message?: string;
+  // }
 
-    // Rounding results
-    function roundResult(value: number): number {
-      return parseFloat(value.toFixed(4));
-  }
+  //   // Rounding results
+  //   function roundResult(value: number): number {
+  //     return parseFloat(value.toFixed(4));
+  // }
       
       
-    // Handle addition and subtraction operations
-      function evaluateAddSubtract(x: string, y: string, operation: string): EvalResult {
-        let result: number;
+  //   // Handle addition and subtraction operations
+  //     function evaluateAddSubtract(x: string, y: string, operation: string): EvalResult {
+  //       let result: number;
       
-        switch (operation) {
-          case "+":
-            result = roundResult(parseFloat(x) + parseFloat(y));
-            break;
+  //       switch (operation) {
+  //         case "+":
+  //           result = roundResult(parseFloat(x) + parseFloat(y));
+  //           break;
   
-          case "-":
-            result = roundResult(parseFloat(x) - parseFloat(y)); 
-            break;
+  //         case "-":
+  //           result = roundResult(parseFloat(x) - parseFloat(y)); 
+  //           break;
   
-            default:
-              return { value: 0, status: "ERROR", message: "Unknown operation" };
-        }
+  //           default:
+  //             return { value: 0, status: "ERROR", message: "Unknown operation" };
+  //       }
       
-        return { value: result, status: "OK" };
-      }
+  //       return { value: result, status: "OK" };
+  //     }
       
       
       
-      // Handle multiplication and division operations
-      function evaluateMultiplyDivide(x: string, y: string, operation: string): EvalResult {
-        let result: number;
+  //     // Handle multiplication and division operations
+  //     function evaluateMultiplyDivide(x: string, y: string, operation: string): EvalResult {
+  //       let result: number;
         
       
-        switch (operation) {
-          case "x":
-            result = roundResult(parseFloat(x) * parseFloat(y));
-            break;
+  //       switch (operation) {
+  //         case "x":
+  //           result = roundResult(parseFloat(x) * parseFloat(y));
+  //           break;
   
-          case "/":
-            if(parseFloat(y) === 0) {  // Handle division by zero
-              return { value: NaN, status: "ERROR" };
-            }
-            result = roundResult(parseFloat(x) / parseFloat(y));
-            break;
+  //         case "/":
+  //           if(parseFloat(y) === 0) {  // Handle division by zero
+  //             return { value: NaN, status: "ERROR" };
+  //           }
+  //           result = roundResult(parseFloat(x) / parseFloat(y));
+  //           break;
   
-            default:
-              return { value: 0, status: "ERROR", message: "Unknown operation" };
-        }
+  //           default:
+  //             return { value: 0, status: "ERROR", message: "Unknown operation" };
+  //       }
           
-        return { value: result, status: "OK" };
-      }
+  //       return { value: result, status: "OK" };
+  //     }
       
   
   
-      // Handle exponentiation operations
-      function evaluateExponentiation(x: string, y: string, operation: string): EvalResult {
-        let result: number;
+  //     // Handle exponentiation operations
+  //     function evaluateExponentiation(x: string, y: string, operation: string): EvalResult {
+  //       let result: number;
     
-        switch (operation) {
-            case "^":
-                result = roundResult(parseFloat(x) ** parseFloat(y)); 
+  //       switch (operation) {
+  //           case "^":
+  //               result = roundResult(parseFloat(x) ** parseFloat(y)); 
                 
-                if (result > Number.MAX_SAFE_INTEGER) {
-                  console.log("Precision issues due to large number")
-                  return { value: NaN, status: "ERROR", message: "Result exceeds maximum safe integer" };
-                }
-                break;
+  //               if (result > Number.MAX_SAFE_INTEGER) {
+  //                 console.log("Precision issues due to large number")
+  //                 return { value: NaN, status: "ERROR", message: "Result exceeds maximum safe integer" };
+  //               }
+  //               break;
     
-                default:
-                  return { value: 0, status: "ERROR", message: "Unknown operation" };
-        }
+  //               default:
+  //                 return { value: 0, status: "ERROR", message: "Unknown operation" };
+  //       }
     
-        return { value: result, status: "OK" };
-    }
+  //       return { value: result, status: "OK" };
+  //   }
   
   
-    // Handle modulo operations
-    function evaluateModulo(x: string, y: string, operation: string): EvalResult {
-      let result: number;
+  //   // Handle modulo operations
+  //   function evaluateModulo(x: string, y: string, operation: string): EvalResult {
+  //     let result: number;
   
-      switch (operation) {
-          case "%":
-              result = roundResult(parseFloat(x) % parseFloat(y)); 
-              break;
+  //     switch (operation) {
+  //         case "%":
+  //             result = roundResult(parseFloat(x) % parseFloat(y)); 
+  //             break;
   
-              default:
-                return { value: 0, status: "ERROR", message: "Unknown operation" };
-      }
+  //             default:
+  //               return { value: 0, status: "ERROR", message: "Unknown operation" };
+  //     }
   
-      return { value: result, status: "OK" };
-  }
-  
-  
-  // Handle radical operations
-  function evaluateRadical(x: string, y: string, operation: string): EvalResult {
-    let result: number;
-  
-    switch (operation) {
-      case "√":  
-      let multiplier = parseFloat(x) || 1;  
-      let radicand = parseFloat(y);
-  
-      if (radicand < 0) {
-        return { value: NaN, status: "ERROR", message: "Cannot compute negative number" };
-      }
-  
-      result = roundResult(multiplier * Math.sqrt(radicand));
-      break;
+  //     return { value: result, status: "OK" };
+  // }
   
   
-        default:
-            return { value: 0, status: "ERROR", message: "Unknown operation" }; 
-    }
+  // // Handle radical operations
+  // function evaluateRadical(x: string, y: string, operation: string): EvalResult {
+  //   let result: number;
   
-    return { value: result, status: "OK" };
-  }
+  //   switch (operation) {
+  //     case "√":  
+  //     let multiplier = parseFloat(x) || 1;  
+  //     let radicand = parseFloat(y);
+  
+  //     if (radicand < 0) {
+  //       return { value: NaN, status: "ERROR", message: "Cannot compute negative number" };
+  //     }
+  
+  //     result = roundResult(multiplier * Math.sqrt(radicand));
+  //     break;
+  
+  
+  //       default:
+  //           return { value: 0, status: "ERROR", message: "Unknown operation" }; 
+  //   }
+  
+  //   return { value: result, status: "OK" };
+  // }
   
   
   
-  function formatResult(value: string): string {
-    if (value.length > 18) {
-      const numberValue = parseFloat(value);
-      return numberValue.toExponential(4); // rounds to 4 places
-    }
-    return value;
-  }
+  // function formatResult(value: string): string {
+  //   if (value.length > 18) {
+  //     const numberValue = parseFloat(value);
+  //     return numberValue.toExponential(4); // rounds to 4 places
+  //   }
+  //   return value;
+  // }
   
+
+
   // Using regex to check if the value is a number
   function isNumber(value: string): boolean {
     return /^\d+$/.test(value);
@@ -194,20 +197,36 @@ const Calculator: React.FC = () => {
     switch (operation) {
       case "+":
       case "-":
-        return evaluateAddSubtract(x, y, operation).value.toString();
       case "x":
       case "/":
-        return evaluateMultiplyDivide(x, y, operation).value.toString();
       case "^":
-        return evaluateExponentiation(x, y, operation).value.toString();
       case "%":
-        return evaluateModulo(x, y, operation).value.toString();
       case "√":
-        return evaluateRadical(x, y, operation).value.toString();
+        return handleArithmetic(x, y, operation).value.toString();
       default:
         return "";
     }
   };
+  
+
+  // const computeResult = (x: string, y: string, operation: string): string => {
+  //   switch (operation) {
+  //     case "+":
+  //     case "-":
+  //       return evaluateAddSubtract(x, y, operation).value.toString();
+  //     case "x":
+  //     case "/":
+  //       return evaluateMultiplyDivide(x, y, operation).value.toString();
+  //     case "^":
+  //       return evaluateExponentiation(x, y, operation).value.toString();
+  //     case "%":
+  //       return evaluateModulo(x, y, operation).value.toString();
+  //     case "√":
+  //       return evaluateRadical(x, y, operation).value.toString();
+  //     default:
+  //       return "";
+  //   }
+  // };
   
   
   const processInput = (inputValue: string) => {
@@ -391,40 +410,69 @@ const Calculator: React.FC = () => {
 
   
     // Calculates the expression once the "Enter" or "=" is triggered
-    if (inputValue === "=") {
-        if (x && y && operation) {
-            let result;
-            switch (operation) {
-                case "+":
-                case "-": result = evaluateAddSubtract(x, y, operation); break;
-                case "x":
-                case "/": result = evaluateMultiplyDivide(x, y, operation); break;
-                case "^": result = evaluateExponentiation(x, y, operation); break;
-                case "%": result = evaluateModulo(x, y, operation); break;
-                case "√": result = evaluateRadical(x, y, operation); break;
-                default: return;
-            }
+    // if (inputValue === "=") {
+    //     if (x && y && operation) {
+    //         let result;
+    //         switch (operation) {
+    //             case "+":
+    //             case "-": result = evaluateAddSubtract(x, y, operation); break;
+    //             case "x":
+    //             case "/": result = evaluateMultiplyDivide(x, y, operation); break;
+    //             case "^": result = evaluateExponentiation(x, y, operation); break;
+    //             case "%": result = evaluateModulo(x, y, operation); break;
+    //             case "√": result = evaluateRadical(x, y, operation); break;
+    //             default: return;
+    //         }
   
-            const formattedResult = formatResult(result.value.toString());
-            if (result.status === "OVERFLOW" || result.status === "ERROR") {
-              if (result.status === "ERROR") {
-                setCurrentInput("Error");
-              } else {
-                setCurrentInput("Overflow");
-              }
-              setX(null);
+    //         const formattedResult = formatResult(result.value.toString());
+    //         if (result.status === "OVERFLOW" || result.status === "ERROR") {
+    //           if (result.status === "ERROR") {
+    //             setCurrentInput("Error");
+    //           } else {
+    //             setCurrentInput("Overflow");
+    //           }
+    //           setX(null);
+    //           setY(null);
+    //           setOperation(null);
+    //         } else {
+    //             setCurrentInput(formattedResult);
+    //             setX(formattedResult);
+    //             setY(null);
+    //             setOperation(null);
+    //         }
+    //     }
+    //     setSolutionDisplayed(true);
+    //     return;
+    // }
+
+    if (inputValue === "=") {
+      if (x && y && operation) {
+        const result = handleArithmetic(x, y, operation);
+
+          const formattedResult = formatResult(result.value.toString());
+
+          if (result.status === "OVERFLOW" || result.status === "ERROR") {
+            if (result.status === "ERROR") {
+              setCurrentInput("Error");
+
+            } else {
+              setCurrentInput("Overflow");
+
+            }
+            setX(null);
+            setY(null);
+            setOperation(null);
+
+          } else {
+              setCurrentInput(formattedResult);
+              setX(formattedResult);
               setY(null);
               setOperation(null);
-            } else {
-                setCurrentInput(formattedResult);
-                setX(formattedResult);
-                setY(null);
-                setOperation(null);
-            }
-        }
-        setSolutionDisplayed(true);
-        return;
-    }
+          }
+      }
+      setSolutionDisplayed(true);
+      return;
+  }
   
 
     // Trigger reset since solution exists
@@ -455,13 +503,16 @@ const Calculator: React.FC = () => {
     }
   
   };
-  
 
   
   // Handles calculations using mouse 
   const handleButtonClick = (value: string) => {
     processInput(value);
   };
+
+
+
+
 
     return (
 
