@@ -1,5 +1,5 @@
 
-import React, { useState, KeyboardEvent } from 'react';
+import React, { useState } from 'react';
 import Button from './Button'
 import Display from './Display';
 import CalculatorInput from './CalculatorInput';
