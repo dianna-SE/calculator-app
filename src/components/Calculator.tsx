@@ -3,6 +3,8 @@ import React, { useState, KeyboardEvent } from 'react';
 import Button from './Button'
 import Display from './Display';
 import CalculatorInput from './CalculatorInput';
+import handleKeyDown from '../util/handleKeyDown';
+
 
 const Calculator: React.FC = () => {
     const [x, setX] = useState<string | null>(null);
@@ -454,78 +456,7 @@ const Calculator: React.FC = () => {
   
   };
   
-  
-  
-  // Handles calculations using keyboard 
-  const handleKeyDown = (event: KeyboardEvent) => {
-    event.preventDefault(); // prevents characters not in key to be handled
-  
-    const keyToValueMap: { [key: string]: string } = {
-        '+': '+',
-        '-': '-',
-        '*': 'x',
-        '/': '/',
-        'x': 'x',
-        '%': '%',
-        '^': '^',
-        '.': '.',
-        'r': '√',
-        'Enter': '=',
-        '=': '=',
-        'Escape': 'AC',
-        'Backspace': 'DEL'
-    };
-  
-    let value = keyToValueMap[event.key];
 
-    if (event.key === "+" && event.shiftKey) {
-        setCurrentInput('+');
-    }
-    
-  
-  // Handle delete feature for keyboard
-  if (value === 'DEL') {
-    if (currentInput.length > 0) {
-      setCurrentInput(prevInput => prevInput.slice(0, -1));
-      
-      if (!operation) {
-        // If no operation is pressed, update x
-        setX(prevX => (prevX ? prevX.slice(0, -1) : null));
-      } else if (operation && y !== null) {
-        // If operation has been pressed, update y
-        setY(prevY => (prevY ? prevY.slice(0, -1) : null));
-      }
-      
-      return;
-    }
-  
-    if (currentInput.length === 0) {
-      console.log("Unable to delete empty input.")
-      return;
-    }
-  }
-  
-  
-  
-    // Special handling for signs (+/-):
-    if (event.key === '+' && (currentInput === "" || currentInput === "-")) {
-        // value = 'AC';
-        return
-    }
-  
-    if (event.key === '-' && (currentInput === "" || /[+\-x/^%√]$/.test(currentInput))) {
-      value = 'neg';
-    }
-  
-    // Checks for a valid character before passing into calculation function
-    if (value || /^[0-9]$/.test(event.key)) {
-      event.preventDefault();
-      processInput(value || event.key);
-    } else {
-      console.log("Ignored input:", event.key);
-      return;
-    }
-  };
   
   // Handles calculations using mouse 
   const handleButtonClick = (value: string) => {
@@ -535,77 +466,22 @@ const Calculator: React.FC = () => {
     return (
 
     <section className="calculator-body">
-      {/* <input 
-          type="text" 
-          value={currentInput || '0'}
-          id="calculator-input" 
-          placeholder="0"
-          onKeyDown={handleKeyDown} 
 
-          onChange={(e) => {
-            const newValue = e.target.value;
-      
-            
-            if (newValue === "AC") {
-              setCurrentInput(""); // Clear
-            } 
-            
-            else if (currentInput === "Error") {
-              setCurrentInput(newValue); // Set error
-            } 
-            
-            else if (currentInput === "0" && /[0-9.]/.test(newValue)) {
-              setCurrentInput(newValue);
-            } 
-            
-            else if (newValue === "") {
-              setCurrentInput("0"); // Restore "0" if the input is empty
-            } 
-            
-            else if (newValue.startsWith("0.") || newValue.startsWith("-0.")) {
-              setCurrentInput(newValue); // Enter decimal without removing leading 0
-            } 
-            
-            else if (newValue.startsWith("0") || newValue.startsWith("-0")) {
-              setCurrentInput(newValue.slice(1)); //remove leading zero
-            } 
-            
-            else {
-              setCurrentInput(newValue); // set user input
-            }
-          }}
+      <CalculatorInput 
+        currentInput={currentInput}
+        setCurrentInput={setCurrentInput}
+        handleKeyDown={(event) => handleKeyDown({
+          currentInput,
+          operation,
+          y,
+          setCurrentInput,
+          setX,
+          setY,
+          processInput,
+        })(event)}
+      />
 
-        onFocus={() => {
-          if (currentInput === "0" || currentInput === "Error") {
-            setCurrentInput("");
-          }
-          }}
-
-
-        onBlur={() => {
-          if (currentInput === "") {
-              setCurrentInput("0");
-            }
-          }}
-
-      /> */}
-
-    <CalculatorInput 
-      currentInput={currentInput}
-      setCurrentInput={setCurrentInput}
-      handleKeyDown={handleKeyDown}
-/>
-
-
-
-
-
-      <div className="display-body">
-        <button className="display-screen">
-          <Display displayHistory={displayHistory} />
-        </button>
-      </div>
-
+      <Display displayHistory={displayHistory} />
 
       <div className="calculator-section">
         {buttonConfig.map((row, rowIndex) => (
