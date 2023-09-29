@@ -114,6 +114,7 @@ const Calculator: React.FC = () => {
                 result = roundResult(parseFloat(x) ** parseFloat(y)); 
                 
                 if (result > Number.MAX_SAFE_INTEGER) {
+                  console.log("Precision issues due to large number")
                   return { value: NaN, status: "ERROR", message: "Result exceeds maximum safe integer" };
                 }
                 break;
