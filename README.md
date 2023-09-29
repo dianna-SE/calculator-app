@@ -76,13 +76,13 @@ Developing an application can become very complex. I have tried my best to modul
 As I developed more features for the calculator, I took into consideration different versions. Because of this, each was separated into different branches. Eventually, once the calculator was complete, it was ready to be merged into the main branch for official deployment.
 
 
-Components:
+**Components**:
 * Button.tsx (Displays buttons within the calculator)
 * Calculator.tsx (The main calculator component)
 * CalculatorInput.tsx (Displays the number or operation inputted)
 * Display.tsx (Shows the history of what has been inputted)
 
-Utils:
+**Utils**:
 * handleArithmetic.tsx (Handles all arithmetic operations)
 * handleKeyDown.tsx (Handles keyboard operations)
 
