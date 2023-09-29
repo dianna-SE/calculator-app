@@ -1,5 +1,7 @@
 
 import React, { useState, KeyboardEvent } from 'react';
+import Button from './Button'
+import Display from './Display';
 
 const Calculator: React.FC = () => {
     const [x, setX] = useState<string | null>(null);
@@ -590,9 +592,11 @@ const Calculator: React.FC = () => {
 
       <div className="display-body">
         <button className="display-screen">
-          {displayHistory === "" 
+          {/* {displayHistory === "" 
               ? <p className="placeholder-text"></p>
-              : <p>{displayHistory}</p>}
+              : <p>{displayHistory}</p>} */}
+
+          <Display displayHistory={displayHistory} />
         </button>
       </div>
 
@@ -600,10 +604,20 @@ const Calculator: React.FC = () => {
       <div className="calculator-section">
         {buttonConfig.map((row, rowIndex) => (
         <div key={`buttonRow-${rowIndex}`}>
-          {row.map((button, btnIndex) => (
+          {/* {row.map((button, btnIndex) => (
               <button key={`btn-${btnIndex}`} className="calculator-button" onClick={() => handleButtonClick(button.value)}>
                 {button.display}
               </button>
+            ))} */}
+
+          {row.map((button, btnIndex) => (
+                <Button 
+                    key={`btn-${btnIndex}`} 
+                    className="calculator-button"
+                    display={button.display} 
+                    value={button.value} 
+                    onClick={handleButtonClick} 
+                />
             ))}
           </div>
         ))}
