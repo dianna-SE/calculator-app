@@ -67,7 +67,7 @@ function evaluateExponentiation(x: string, y: string, operation: string): EvalRe
                 
                 if (result > Number.MAX_SAFE_INTEGER) {
                   console.log("Precision issues due to large number")
-                  return { value: NaN, status: "ERROR", message: "Result exceeds maximum safe integer" };
+                  return { value: NaN, status: "OVERFLOW", message: "Result exceeds maximum safe integer" };
                 }
                 break;
     
