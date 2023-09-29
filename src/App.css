@@ -29,6 +29,10 @@ h1 {
   min-height: 100vh;
 }
 
+.no-select {
+  user-select: none;
+}
+
 
 .calculator-body {
   border-radius: clamp(10px, 4vw, 10px);
